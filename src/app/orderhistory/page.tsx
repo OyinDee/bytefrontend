@@ -1,6 +1,6 @@
 "use client";
 import OrderHistory from "@/components/OrderHistory";
-import { Order, Meal } from '../../types';
+import { Order, Meal } from '@/components/types';
 
 const sampleMeals: Meal[] = [
     {
