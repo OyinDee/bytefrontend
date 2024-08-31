@@ -5,36 +5,57 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const Profile: React.FC = () => {
-  const user = {
-    name: "Nezuko Kamado",
-    nickname: "nezuko",
-    totalBytes: 27,
-    byteBalance: 1250,
-    transactionHistory: [
-      { date: "2024-08-20", description: "Burger Home", amount: -200 },
-      { date: "2024-08-15", description: "Deposit", amount: 500 },
-      { date: "2024-08-10", description: "Pizza Hut", amount: -300 },
-      { date: "2024-08-01", description: "Deposit", amount: 1000 },
-    ]
+  
+  var user = localStorage.byteUser
+  if (user) {
+    user = JSON.parse(user)  
+    
+  } else {
+    user = {
+      name: "Nezuko Kamado",
+      username: "nezuko",
+      phoneNumber: 54678904565,
+      totalBytes: 27,
+      byteBalance: 1250,
+      orderHistory: [
+        { date: "2024-08-20", description: "Burger Home", amount: -200 },
+        { date: "2024-08-15", description: "Deposit", amount: 500 },
+        { date: "2024-08-10", description: "Pizza Hut", amount: -300 },
+        { date: "2024-08-01", description: "Deposit", amount: 1000 },
+      ]
+    };
+    
+  }
+
+  const handleEditImage = () => {
+    alert('Edit profile image functionality coming soon! 🎨');
   };
 
   return (
-    <div className="relative min-h-screen pt-24 pb-12 bg-white text-black">
+    <div className="relative min-h-screen pt-20 pb-20 bg-white text-black">
       {/* Profile Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 lg:p-8">
+      <div className="relative z-10 flex flex-col items-center justify-center p-4 lg:p-8">
         {/* Profile Header */}
         <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 border border-gray-200">
-          <div className="flex flex-col items-center text-center">
+          <div className="flex flex-col items-center text-center relative">
             {/* Profile Image */}
-            <Image
-              src="/Images/nk.jpg" // Replace with your profile image path
-              alt="Profile Picture"
-              width={150}
-              height={150}
-              className="rounded-full border-4 border-yellow-300 mb-4"
-            />
-            <h1 className="text-3xl font-bold mb-2 lg:text-4xl">{user.name}</h1>
-            <p className="text-lg text-gray-700 mb-4 lg:text-xl">@{user.nickname}</p>
+            <div className="relative">
+              <Image
+                src="/Images/nk.jpg" // Replace with your profile image path
+                alt="Profile Picture"
+                width={150}
+                height={150}
+                className="rounded-full border-4 border-yellow-300 mb-4"
+              />
+              <button
+                onClick={handleEditImage}
+                className="absolute bottom-0 right-0 bg-yellow-300 text-black p-1 rounded-full shadow-md hover:bg-yellow-400 transition-colors duration-200"
+              >
+                ✏️
+              </button>
+            </div>
+            <h1 className="text-3xl font-bold mb-2 lg:text-4xl">@{(user.username).toLowerCase()}</h1>
+            <p className="text-lg text-gray-700 mb-4 lg:text-xl">{user.email}</p>
             <p className="text-base italic text-gray-600 lg:text-lg">
               &quot;Life is uncertain. Eat dessert first!&quot;
             </p>
@@ -61,21 +82,20 @@ const Profile: React.FC = () => {
         <div className="mt-8 w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200">
           <h2 className="text-2xl font-bold mb-4 text-center lg:text-3xl">Bytes History</h2>
           <div className="overflow-x-auto">
-            {user.transactionHistory.length > 0 ? (
+            {user.orderHistory.length > 0 ? (
               <ul className="divide-y divide-gray-200">
-                {user.transactionHistory.map((transaction, index) => (
+                {user.orderHistory.map((transaction, index) => (
                   <li key={index} className="py-4 flex items-center justify-between">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full">
-                      {/* Date and Time */}
-                      <span className="text-black text-sm lg:text-base lg:w-1/3 text-left">{transaction.date}</span>
+                    <div className="flex flex-col text-left">
+                      {/* Date */}
+                      <span className="text-black text-sm lg:text-base">{transaction.date}</span>
                       {/* Details */}
-                      <p className="text-black text-sm lg:text-base lg:w-1/3 text-center">{transaction.description}</p>
-                      {/* Amount */}
-                      <span className={`font-semibold ${transaction.amount < 0 ? 'text-red-500' : 'text-green-500'} lg:w-1/3 text-right lg:text-base`}>
-                        {transaction.amount < 0 ? `-${Math.abs(transaction.amount)}` : `+${transaction.amount}`} 🍔
-                      </span>
+                      <p className="text-black text-sm lg:text-base">{transaction.description}</p>
                     </div>
-                    <hr className="my-2 border-gray-200" />
+                    {/* Amount */}
+                    <span className={`font-semibold ${transaction.amount < 0 ? 'text-red-500' : 'text-green-500'} lg:text-base text-right`}>
+                      {transaction.amount < 0 ? `-${Math.abs(transaction.amount)}` : `+${transaction.amount}`} 🍔
+                    </span>
                   </li>
                 ))}
               </ul>

@@ -35,6 +35,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+
   return (
     <html lang="en">
       <body className={inter.className}>

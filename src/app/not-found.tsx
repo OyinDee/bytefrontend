@@ -21,7 +21,7 @@ const Custom404: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center p-4">
+      <div className="relative z-10 flex pt-5  flex-col items-center justify-center min-h-screen text-center p-4">
         <div className="bg-white bg-opacity-10 backdrop-blur-xs p-8 rounded-lg shadow-xl max-w-lg mx-auto animate-fadeIn">
           <h1 className="text-8xl font-extrabold mb-4 text-red-500 animate-bounce">404</h1>
           <p className="text-3xl font-semibold mb-4 text-yellow-300 animate-pulse">Oops! This page is a culinary mystery!</p>

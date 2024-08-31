@@ -32,7 +32,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         } else {
           setIsAuthenticated(true);
           localStorage.setItem('byteUser', JSON.stringify(decodedToken));
-          if (isAuthRoute) router.push('/home');
+          if (isAuthRoute) router.push('/');
         }
       } catch (error) {
         localStorage.removeItem('token');
@@ -43,6 +43,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setIsAuthenticated(false);
       if (!isAuthRoute) router.push('/login');
     }
+
   }, [router]);
 
   return (

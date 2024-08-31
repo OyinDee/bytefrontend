@@ -1,55 +1,56 @@
 "use client";
 
-import { useContext, useState } from 'react';
-import { Bars3Icon, XMarkIcon, HomeIcon, ArrowRightOnRectangleIcon, ShoppingBagIcon, UserIcon, ClockIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { useContext, useEffect, useState } from 'react';
+import {
+  HomeIcon,
+  ArrowRightOnRectangleIcon,
+  ShoppingBagIcon,
+  UserIcon,
+  ClockIcon,
+  PlusCircleIcon,
+} from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { AuthContext } from '@/components/AuthCheck';
 
 const Navbar: React.FC = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const pathname = usePathname(); 
-  const authContext = useContext(AuthContext);
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Local state for authentication
 
-  const isAuthenticated = authContext?.isAuthenticated; // Check if context is undefined
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token); // Update state based on token presence
+  }, []);
 
   const getLinkClassName = (path: string) => {
     return pathname === path ? 'text-yellow-400' : 'hover:text-gray-400 transition-colors duration-200';
   };
 
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to log out?')) {
+      localStorage.removeItem('token');
+      setIsAuthenticated(false); // Update state after logout
+      router.push('/login');
+    }
+  };
+
   return (
     <>
-      {/* Sidebar for small screens */}
+      {/* Navbar for small screens (always visible) */}
       <nav
-        className={`fixed bottom-0 left-0 w-full bg-black text-white transform transition-transform ${
-          isSidebarOpen ? 'translate-y-0' : 'translate-y-full'
-        } lg:hidden z-50 shadow-lg`}
+        className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden"
         style={{ height: '60px' }}
       >
         <div className="flex items-center justify-between p-2">
-          <div
-            className={`flex flex-1 justify-around ${
-              isSidebarOpen ? 'block' : 'hidden'
-            }`}
-          >
+          <div className="flex flex-1 justify-around">
             <ul className="flex items-center w-full justify-around">
               {isAuthenticated ? (
                 <>
                   <li className="flex flex-col items-center">
                     <Link
                       href="/"
-                      onClick={closeSidebar}
-                      className={`flex flex-col items-center ${getLinkClassName(
-                        '/'
-                      )}`}
+                      className={`flex flex-col items-center ${getLinkClassName('/')}`}
                     >
                       <HomeIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Home</span>
@@ -57,23 +58,17 @@ const Navbar: React.FC = () => {
                   </li>
                   <li className="flex flex-col items-center">
                     <Link
-                      href="/offers"
-                      onClick={closeSidebar}
-                      className={`flex flex-col items-center ${getLinkClassName(
-                        '/offers'
-                      )}`}
+                      href="/search"
+                      className={`flex flex-col items-center ${getLinkClassName('/search')}`}
                     >
-                      <ShoppingBagIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Offers</span>
+                      <ClockIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Search</span>
                     </Link>
                   </li>
                   <li className="flex flex-col items-center">
                     <Link
                       href="/fund"
-                      onClick={closeSidebar}
-                      className={`flex flex-col items-center ${getLinkClassName(
-                        '/fund'
-                      )}`}
+                      className={`flex flex-col items-center ${getLinkClassName('/fund')}`}
                     >
                       <PlusCircleIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Fund</span>
@@ -81,49 +76,50 @@ const Navbar: React.FC = () => {
                   </li>
                   <li className="flex flex-col items-center">
                     <Link
-                      href="/history"
-                      onClick={closeSidebar}
-                      className={`flex flex-col items-center ${getLinkClassName(
-                        '/history'
-                      )}`}
+                      href="/offers"
+                      className={`flex flex-col items-center ${getLinkClassName('/offers')}`}
                     >
-                      <ClockIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">History</span>
+                      <ShoppingBagIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Offers</span>
                     </Link>
                   </li>
                   <li className="flex flex-col items-center">
                     <Link
                       href="/profile"
-                      onClick={closeSidebar}
-                      className={`flex flex-col items-center ${getLinkClassName(
-                        '/profile'
-                      )}`}
+                      className={`flex flex-col items-center ${getLinkClassName('/profile')}`}
                     >
                       <UserIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Profile</span>
                     </Link>
+                  </li>
+                  <li className="flex flex-col items-center">
+                    <button
+                      onClick={handleLogout}
+                      className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Logout</span>
+                    </button>
                   </li>
                 </>
               ) : (
                 <>
                   <li className="flex flex-col items-center">
                     <Link
-                      href="/login"
-                      onClick={closeSidebar}
-                      className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200"
-                    >
-                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Login</span>
-                    </Link>
-                  </li>
-                  <li className="flex flex-col items-center">
-                    <Link
                       href="/signup"
-                      onClick={closeSidebar}
                       className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200"
                     >
                       <PlusCircleIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Signup</span>
+                    </Link>
+                  </li>
+                  <li className="flex flex-col items-center">
+                    <Link
+                      href="/login"
+                      className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Login</span>
                     </Link>
                   </li>
                 </>
@@ -144,28 +140,34 @@ const Navbar: React.FC = () => {
               <Link href="/" className={getLinkClassName('/')}>
                 Home
               </Link>
-              <Link href="/profile" className={getLinkClassName('/profile')}>
-                Profile
-              </Link>
-              <Link href="/history" className={getLinkClassName('/history')}>
-                History
-              </Link>
-              <Link href="/offers" className={getLinkClassName('/offers')}>
-                Offers
+              <Link href="/search" className={getLinkClassName('/search')}>
+                Search
               </Link>
               <Link href="/fund" className={getLinkClassName('/fund')}>
                 Fund Account
               </Link>
+              <Link href="/offers" className={getLinkClassName('/offers')}>
+                Offers
+              </Link>
+              <Link href="/profile" className={getLinkClassName('/profile')}>
+                Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="hover:text-gray-400 transition-colors duration-200"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <div className="hidden lg:flex lg:space-x-6">
-              <Link
-                href="/login"
-                className="flex items-center hover:text-gray-400 transition-colors duration-200"
-              >
-                <ArrowRightOnRectangleIcon className="h-6 w-6 mr-2" />
-                Login
-              </Link>
+                <Link
+                  href="/login"
+                  className="flex items-center hover:text-gray-400 transition-colors duration-200"
+                >
+                  <ArrowRightOnRectangleIcon className="h-6 w-6 mr-2" />
+                  Login
+                </Link>
               <Link
                 href="/signup"
                 className="flex items-center hover:text-gray-400 transition-colors duration-200"
@@ -175,11 +177,6 @@ const Navbar: React.FC = () => {
               </Link>
             </div>
           )}
-          <div className="block lg:hidden">
-            <button onClick={toggleSidebar} className="text-white">
-              <Bars3Icon className="h-6 w-6" />
-            </button>
-          </div>
         </div>
       </nav>
     </>
