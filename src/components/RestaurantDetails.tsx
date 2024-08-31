@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Restaurant, Meal } from '../app/types';
+import { Restaurant, Meal } from './types';
 
 interface RestaurantDetailsProps {
   restaurant: Restaurant;

@@ -1,7 +1,7 @@
 // components/OrderHistory.tsx
 import React from 'react';
 import OrderItem from './OrderItem'
-import { Order } from '../app/types';
+import { Order } from './types';
 
 interface OrderHistoryProps {
   orders: Order[];

@@ -1,7 +1,7 @@
 "use client";
 
 import One from '../../components/One';
-import { Meal } from '../types';
+import { Meal } from '../../components/types';
 
 const Allpage: React.FC = () => {
   const meals: Meal[] = [

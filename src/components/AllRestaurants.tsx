@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Restaurant } from '../app/types';
+import { Restaurant } from './types';
 import Image from 'next/image';
 
 interface RestaurantListingsProps {

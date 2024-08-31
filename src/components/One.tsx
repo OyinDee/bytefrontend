@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Meal } from '../app/types';
+import { Meal } from './types';
 
 type OneProps = {
   restaurantName: string;

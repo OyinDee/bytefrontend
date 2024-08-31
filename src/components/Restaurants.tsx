@@ -1,7 +1,7 @@
 // pages/restaurant.tsx
 import React from 'react';
 import RestaurantMeals from './One';
-import { Meal } from '../app/types';
+import { Meal } from './types';
 
 const meals: Meal[] = [
   {

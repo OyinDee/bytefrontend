@@ -1,7 +1,7 @@
 "use client";
 import RestaurantDetails from "@/components/RestaurantDetails";
 
-import { Restaurant, Meal } from '../types';
+import { Restaurant, Meal } from '../../components/types';
 
 // Example data (replace with real data fetching logic)
 const exampleRestaurant: Restaurant = {

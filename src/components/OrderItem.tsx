@@ -1,5 +1,5 @@
 import React from 'react';
-import { Order } from '../app/types';
+import { Order } from './types';
 import ReorderIcon from './ReorderIcon'; 
 
 interface OrderItemProps {

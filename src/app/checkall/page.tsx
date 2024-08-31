@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import RestaurantListings from '@/components/AllRestaurants'; // Adjust the import path if necessary
-import { Restaurant } from '../types'; // Adjust the import path if necessary
+import { Restaurant } from '../../components/types'; // Adjust the import path if necessary
 
 const RestaurantListingsPage: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);

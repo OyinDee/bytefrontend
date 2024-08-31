@@ -1,6 +1,6 @@
 // components/AdminOrderItem.tsx
 import React from 'react';
-import { Order } from '../app/types'; // Adjust the path to where your types are located
+import { Order } from './types'; // Adjust the path to where your types are located
 import ReorderIcon from './ReorderIcon'; // Assuming this is for a reorder action
 
 interface AdminOrderItemProps {
