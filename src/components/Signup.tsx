@@ -61,7 +61,7 @@ const SignUp: React.FC = () => {
       const fullPhoneNumber = `${phoneCode}${phoneNumber}`;
 
       // Replace with your actual API endpoint
-      await axios.post('https://byte-u1mi.onrender.com/auth/register', {
+      await axios.post('https://mongobyte.onrender.com/auth/register', {
         username,
         email,
         password,

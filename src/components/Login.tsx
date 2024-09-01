@@ -42,7 +42,7 @@ const Login: React.FC = () => {
 
     try {
       // Replace with your actual API endpoint
-      const response = await axios.post('https://byte-u1mi.onrender.com/auth/login', {
+      const response = await axios.post('https://mongobyte.onrender.com/auth/login', {
         username,
         password,
       });

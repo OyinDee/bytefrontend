@@ -49,7 +49,7 @@ const ResetPassword: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://byte-u1mi.onrender.com/auth/request-reset-code", { email });
+      const response = await axios.post("https://mongobyte.onrender.com/auth/request-reset-code", { email });
 
       if (response.status === 200) {
         setStep(2); // Proceed to the next step if successful
@@ -86,7 +86,7 @@ const ResetPassword: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://byte-u1mi.onrender.com/auth/reset-password", {
+      const response = await axios.post("https://mongobyte.onrender.com/auth/reset-password", {
         email,
         resetCode,
         newPassword,
