@@ -18,7 +18,7 @@ const SignUpSuccess: React.FC = () => {
 
     try {
       // Send verification code to backend
-      const response = await axios.get('https://mongobyte.onrender.com/verify-email', { params: { code: verificationCode } });
+      const response = await axios.get('https://mongobyte.onrender.com/api/v1/verify-email', { params: { code: verificationCode } });
       if (response.status === 200) {
         route.push('/login');
       } else {
