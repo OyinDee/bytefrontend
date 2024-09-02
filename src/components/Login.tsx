@@ -58,7 +58,7 @@ const Login: React.FC = () => {
         
         localStorage.setItem('byteUser', JSON.stringify(decodedToken));
         
-        router.push('/home');
+        router.push('/profile');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
