@@ -254,7 +254,7 @@ const Profile: React.FC = () => {
             <div className="flex flex-col lg:flex-row lg:justify-between">
               <div className="mb-4 lg:mb-0">
                 <h2 className="text-xl font-semibold mb-2">Total Bytes</h2>
-                <p className="text-lg">{user.totalBytes}</p>
+                <p className="text-lg">{user.orderHistory.length}</p>
               </div>
               <div className="mb-4 lg:mb-0">
                 <h2 className="text-xl font-semibold mb-2">Byte Balance</h2>
@@ -266,11 +266,17 @@ const Profile: React.FC = () => {
           <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Order History</h2>
             <ul className="list-disc pl-5">
-              {user.orderHistory.map((order, index) => (
-                <li key={index} className="mb-2">
-                  <span className="font-bold">{order.date}</span>: {order.description} - <span className={order.amount < 0 ? 'text-red-500' : 'text-green-500'}>{order.amount < 0 ? `-${Math.abs(order.amount)}` : `+${order.amount}`}</span>
-                </li>
-              ))}
+            {user.orderHistory.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {user.orderHistory.map((order, index) => (
+                  <li key={index} className="mb-2">
+                    <span className="font-bold">{order.date}</span>: {order.description} - {order.amount}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No order history available.</p>
+            )}
             </ul>
           </div>
         </div>
