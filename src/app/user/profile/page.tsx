@@ -28,6 +28,8 @@ const Profile: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [bio, setBio] = useState<string>('');
   const [editingBio, setEditingBio] = useState(false);
+  const [loading, setLoading] = useState(true); // State to manage loading
+  const [error, setError] = useState<string | null>(null); // State to manage error
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,26 +43,15 @@ const Profile: React.FC = () => {
           });
           setUser(response.data);
           setBio(response.data.bio || '');
+          setLoading(false); // Stop loading once data is fetched
         } catch (error) {
           console.error('Error fetching user data:', error);
+          setError('Failed to load user data. Please try again later.');
+          setLoading(false); // Stop loading on error
         }
       } else {
-        setUser({
-          name: "Nezuko Kamado",
-          username: "nezuko",
-          phoneNumber: 54678904565,
-          totalBytes: 27,
-          byteBalance: 1250,
-          orderHistory: [
-            { date: "2024-08-20", description: "Burger Home", amount: -200 },
-            { date: "2024-08-15", description: "Deposit", amount: 500 },
-            { date: "2024-08-10", description: "Pizza Hut", amount: -300 },
-            { date: "2024-08-01", description: "Deposit", amount: 1000 },
-          ],
-          imageUrl: "/Images/nk.jpg",
-          bio: "Life is uncertain. Eat dessert first!"
-        });
-        setBio("Life is uncertain. Eat dessert first!");
+        setLoading(false); // Stop loading if no token is found
+        setError('No user token found. Please log in.');
       }
     };
 
@@ -160,8 +151,16 @@ const Profile: React.FC = () => {
     return phoneNumber.toString().replace(/^(\+234)/, '0');
   };
 
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen"><p>Loading...</p></div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center min-h-screen text-red-500"><p>{error}</p></div>;
+  }
+
   if (!user) {
-    return <p>Loading...</p>;
+    return <div className="flex justify-center items-center min-h-screen"><p>User data is not available.</p></div>;
   }
 
   return (
@@ -170,19 +169,18 @@ const Profile: React.FC = () => {
         <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 border border-gray-200">
           <div className="flex flex-col items-center text-center relative">
             <div className="relative">
-            <Image
-              src={user.imageUrl || "/Images/nk.jpg"}
-              alt="Profile Picture"
-              width={150}
-              height={150}
-              className="rounded-full border-4 border-yellow-300 mb-4 object-cover"
-              style={{
-                width: '150px',
-                height: '150px',
-                objectFit: 'cover',
-              }}
-            />
-
+              <Image
+                src={user.imageUrl || "/Images/nk.jpg"}
+                alt="Profile Picture"
+                width={150}
+                height={150}
+                className="rounded-full border-4 border-yellow-300 mb-4 object-cover"
+                style={{
+                  width: '150px',
+                  height: '150px',
+                  objectFit: 'cover',
+                }}
+              />
               <button
                 onClick={handleEditImage}
                 className="absolute bottom-0 right-0 bg-yellow-300 text-black p-1 rounded-full shadow-md hover:bg-yellow-400 transition-colors duration-200"
@@ -264,20 +262,19 @@ const Profile: React.FC = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2">Order History</h2>
-            <ul className="list-disc pl-5">
-            {user.orderHistory.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {user.orderHistory.map((order, index) => (
-                  <li key={index} className="mb-2">
-                    <span className="font-bold">{order.date}</span>: {order.description} - {order.amount}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No order history available.</p>
-            )}
-            </ul>
+            <h2 className="text-xl font-semibold mb-4">Order History</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {user.orderHistory.map((transaction, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
+                >
+                  <p className="text-gray-700">{transaction.date}</p>
+                  <p className="font-semibold">{transaction.description}</p>
+                  <p className="text-green-600">{transaction.amount}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

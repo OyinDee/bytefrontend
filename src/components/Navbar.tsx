@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import {
   HomeIcon,
   ArrowRightOnRectangleIcon,
@@ -11,33 +11,61 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { AuthContext } from '@/components/AuthCheck';
+import { AuthContext } from './AuthCheck'; 
+import { jwtDecode } from 'jwt-decode'; 
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Local state for authentication
+  const authContext = useContext(AuthContext);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token); // Update state based on token presence
-  }, []);
+  if (!authContext) {
+    throw new Error("Navbar must be used within an AuthProvider");
+  }
+
+  const { isAuthenticated, setIsAuthenticated } = authContext;
 
   const getLinkClassName = (path: string) => {
     return pathname === path ? 'text-yellow-400' : 'hover:text-gray-400 transition-colors duration-200';
   };
 
   const handleLogout = () => {
-    if (confirm('Are you sure you want to log out?')) {
-      localStorage.removeItem('token');
-      setIsAuthenticated(false); // Update state after logout
-      router.push('/login');
-    }
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    router.push('/login');
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const currentPath = window.location.pathname;
+
+    const isAuthRoute = currentPath === '/login' || currentPath === '/signup' || currentPath === '/forgot-password' || currentPath === '/';
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<any>(token);
+
+        if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
+          localStorage.removeItem('token');
+          setIsAuthenticated(false);
+          if (!isAuthRoute) router.push('/login');
+        } else {
+          setIsAuthenticated(true);
+          localStorage.setItem('byteUser', JSON.stringify(decodedToken));
+        }
+      } catch (error) {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        if (!isAuthRoute) router.push('/login');
+      }
+    } else {
+      setIsAuthenticated(false);
+      if (!isAuthRoute) router.push('/login');
+    }
+  }, [isAuthenticated, router, setIsAuthenticated]);
 
   return (
     <>
-      {/* Navbar for small screens (always visible) */}
       <nav
         className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden"
         style={{ height: '60px' }}
@@ -49,8 +77,8 @@ const Navbar: React.FC = () => {
                 <>
                   <li className="flex flex-col items-center">
                     <Link
-                      href="/"
-                      className={`flex flex-col items-center ${getLinkClassName('/')}`}
+                      href="/user"
+                      className={`flex flex-col items-center ${getLinkClassName('/user')}`}
                     >
                       <HomeIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Home</span>
@@ -58,26 +86,8 @@ const Navbar: React.FC = () => {
                   </li>
                   <li className="flex flex-col items-center">
                     <Link
-                      href="/search"
-                      className={`flex flex-col items-center ${getLinkClassName('/search')}`}
-                    >
-                      <ClockIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Search</span>
-                    </Link>
-                  </li>
-                  <li className="flex flex-col items-center">
-                    <Link
-                      href="/fund"
-                      className={`flex flex-col items-center ${getLinkClassName('/fund')}`}
-                    >
-                      <PlusCircleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Fund</span>
-                    </Link>
-                  </li>
-                  <li className="flex flex-col items-center">
-                    <Link
-                      href="/offers"
-                      className={`flex flex-col items-center ${getLinkClassName('/offers')}`}
+                      href="/user/offers"
+                      className={`flex flex-col items-center ${getLinkClassName('/user/offers')}`}
                     >
                       <ShoppingBagIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Offers</span>
@@ -85,8 +95,17 @@ const Navbar: React.FC = () => {
                   </li>
                   <li className="flex flex-col items-center">
                     <Link
-                      href="/profile"
-                      className={`flex flex-col items-center ${getLinkClassName('/profile')}`}
+                      href="/user/fund"
+                      className={`flex flex-col items-center ${getLinkClassName('/user/fund')}`}
+                    >
+                      <PlusCircleIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Fund</span>
+                    </Link>
+                  </li>
+                  <li className="flex flex-col items-center">
+                    <Link
+                      href="/user/profile"
+                      className={`flex flex-col items-center ${getLinkClassName('/user/profile')}`}
                     >
                       <UserIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Profile</span>
@@ -137,19 +156,16 @@ const Navbar: React.FC = () => {
           </Link>
           {isAuthenticated ? (
             <div className="hidden lg:flex lg:space-x-6">
-              <Link href="/" className={getLinkClassName('/')}>
+              <Link href="/user/" className={getLinkClassName('/user/')}>
                 Home
               </Link>
-              <Link href="/search" className={getLinkClassName('/search')}>
-                Search
-              </Link>
-              <Link href="/fund" className={getLinkClassName('/fund')}>
-                Fund Account
-              </Link>
-              <Link href="/offers" className={getLinkClassName('/offers')}>
+              <Link href="/user/offers" className={getLinkClassName('/user/offers')}>
                 Offers
               </Link>
-              <Link href="/profile" className={getLinkClassName('/profile')}>
+              <Link href="/user/fund" className={getLinkClassName('/user/fund')}>
+                Fund Account
+              </Link>
+              <Link href="/user/profile" className={getLinkClassName('/user/profile')}>
                 Profile
               </Link>
               <button
@@ -161,13 +177,13 @@ const Navbar: React.FC = () => {
             </div>
           ) : (
             <div className="hidden lg:flex lg:space-x-6">
-                <Link
-                  href="/login"
-                  className="flex items-center hover:text-gray-400 transition-colors duration-200"
-                >
-                  <ArrowRightOnRectangleIcon className="h-6 w-6 mr-2" />
-                  Login
-                </Link>
+              <Link
+                href="/login"
+                className="flex items-center hover:text-gray-400 transition-colors duration-200"
+              >
+                <ArrowRightOnRectangleIcon className="h-6 w-6 mr-2" />
+                Login
+              </Link>
               <Link
                 href="/signup"
                 className="flex items-center hover:text-gray-400 transition-colors duration-200"

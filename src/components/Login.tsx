@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
-import Loader from '../components/Loader'; // Adjust the path as needed
-import Link from 'next/link'; // Ensure you import Link for navigation
+import Loader from '@/components/Loader'; 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import axios, { AxiosError } from 'axios'; // Import axios
+import { AuthContext } from './AuthCheck'; 
+import axios, { AxiosError } from 'axios';
 
 const Login: React.FC = () => {
+  const authContext = useContext(AuthContext);
+
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // State for loader
-  const [errors, setErrors] = useState<string[]>([]); // State for error messages
-  const router = useRouter(); // Correct usage of useRouter
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]); 
+  const router = useRouter();
 
   // Form validation function
   const validateForm = () => {
@@ -47,22 +51,22 @@ const Login: React.FC = () => {
         password,
       });
 
-      
-      // Redirect based on the response status
       if (response.status === 200) {
-        router.push('/signupsuccess'); // Redirect to signup success page
+        router.push('/signupsuccess');
       } else if (response.status === 202) {
         
         const decodedToken = jwtDecode(response.data.token);
         localStorage.setItem('token', JSON.stringify(response.data.token));
         
         localStorage.setItem('byteUser', JSON.stringify(decodedToken));
-        
-        router.push('/profile');
+        if (authContext) {
+          authContext.setIsAuthenticated(true); 
+        }
+        router.push('/user/');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // Axios-specific error handling
+
         const { response } = error;
         if (response) {
           const { data } = response;
@@ -74,7 +78,7 @@ const Login: React.FC = () => {
         // General error handling
         setErrors([error.message || "An error occurred. Please try again."]);
       } else {
-        // Fallback for unexpected error types
+
         setErrors(["An unexpected error occurred."]);
       }
     } finally {

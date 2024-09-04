@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import './globals.css';
 import { Metadata } from 'next';
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"
 import AuthProvider from '@/components/AuthCheck';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -29,7 +30,6 @@ export const metadata: Metadata = {
   ],
 };
 
-// Define the props for the Layout component
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -37,13 +37,13 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html>
+        <body>
         <AuthProvider>
-          <Navbar />
-          {children}
-        </AuthProvider>
-      </body>
+            <Navbar />
+              {children}
+          </AuthProvider>
+          </body>
     </html>
   );
 }
