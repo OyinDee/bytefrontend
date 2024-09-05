@@ -68,7 +68,10 @@ const CombinedPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    AOS.init();
+    AOS.init({
+      duration: 1200,
+      once: true, 
+    });   AOS.init();
 
     const fetchRestaurants = async () => {
       try {
