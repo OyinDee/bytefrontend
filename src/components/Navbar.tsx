@@ -51,7 +51,6 @@ const Navbar: React.FC = () => {
           if (!isAuthRoute) router.push('/login');
         } else {
           setIsAuthenticated(true);
-          localStorage.setItem('byteUser', JSON.stringify(decodedToken));
         }
       } catch (error) {
         localStorage.removeItem('token');

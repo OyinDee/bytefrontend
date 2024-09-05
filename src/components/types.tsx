@@ -3,7 +3,9 @@ export type Meal = {
     name: string;
     image: string;
     price: number;
+    customId: string;
     per: string;
+    description: string;
     countable: boolean;
     count?: number;  // Only required if countable is true
     available: boolean;
@@ -18,10 +20,11 @@ export interface Order {
 }
 
 export type Restaurant = {
-  id: number;
+  customId: string;
   name: string;
   description: string;
-  image: string;
+  imageUrl: string;
   operatingHours: string;
+  meals: Meal[];
   rating: number;
 };

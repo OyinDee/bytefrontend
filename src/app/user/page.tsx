@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Image from 'next/image';
-import  { ClockIcon } from '@heroicons/react/24/outline';
+import { Carousel } from 'react-responsive-carousel';
+import AOS from "aos";
+import "aos/dist/aos.css";
+import RestaurantListings from "@/components/AllRestaurants";
+import { Restaurant } from "../../components/types";
+
 
 interface Meal {
-  id: string;
+  customId: string;
   name: string;
   description: string;
   price: number;
@@ -13,124 +19,171 @@ interface Meal {
 }
 
 const demoFeaturedMeal: Meal = {
-  id: '1',
+  customId: 'fdyg34',
   name: 'Spaghetti Carbonara',
   description: 'Classic Italian pasta with creamy sauce and pancetta.',
   price: 12.99,
-  imageUrl: '/images/spaghetti-carbonara.jpg', // Use a demo image path
+  imageUrl: '/images/spaghetti-carbonara.jpg',
 };
 
 const demoPopularMeals: Meal[] = [
   {
-    id: '2',
+    customId: 'hgtr56',
     name: 'Margherita Pizza',
     description: 'Fresh tomatoes, mozzarella cheese, and basil.',
     price: 10.99,
-    imageUrl: '/images/margherita-pizza.jpg', // Use a demo image path
+    imageUrl: '/images/fc.jpg',
   },
   {
-    id: '3',
+    customId: 'trhf76',
     name: 'Caesar Salad',
     description: 'Crisp romaine lettuce with Caesar dressing and croutons.',
     price: 8.99,
-    imageUrl: '/images/caesar-salad.jpg', // Use a demo image path
+    imageUrl: '/images/caesar-salad.jpg',
   },
   {
-    id: '4',
+    customId: 'dsfe43',
     name: 'Chicken Tacos',
     description: 'Spicy chicken with fresh toppings in soft tortillas.',
     price: 9.99,
-    imageUrl: '/images/chicken-tacos.jpg', // Use a demo image path
+    imageUrl: '/images/chicken-tacos.jpg',
   },
 ];
 
-const LandingPage: React.FC = () => {
+const CombinedPage: React.FC = () => {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [featuredMeal, setFeaturedMeal] = useState<Meal | null>(demoFeaturedMeal);
   const [popularMeals, setPopularMeals] = useState<Meal[]>(demoPopularMeals);
   const [searchQuery, setSearchQuery] = useState('');
+  const [restaurantSearchResults, setRestaurantSearchResults] = useState<Restaurant[]>([]);
   const [searchResults, setSearchResults] = useState<Meal[]>([]);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/restaurants');
+        setRestaurants(response.data);
+      } catch (error) {
+        setError('Error fetching restaurants. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRestaurants();
+  }, []);
+
+  const toggleMeals = (restaurantId: string) => {
+    setExpanded((prev) => (prev === restaurantId ? null : restaurantId));
+  };
 
   const handleSearch = () => {
-    const results = popularMeals.filter(meal =>
+    const mealResults = popularMeals.filter(meal =>
       meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       meal.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setSearchResults(results);
+
+    const restaurantResults = restaurants.filter(restaurant =>
+      restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    setSearchResults(mealResults);
+    setRestaurantSearchResults(restaurantResults);
   };
 
   return (
-    <div className="bg-white text-black min-h-screen mt-16">
-      {/* Header */}
-      <header className="bg-white text-black p-4 w-full">
-        <div className="container">
-        <div className="relative flex items-center">
-      <input
-        type="text"
-        value ={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.target.value)
-          handleSearch()
-        }}    
-        placeholder="Search..."
-        className="p-2 border border-gray-300 rounded-l-lg text-black w-full"
-        style={{ paddingRight: '50px' }} // Adjust padding to make space for the button
-      />
-    
-    </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
+    <div>
       <main className="p-4 lg:p-8">
-        {/* Featured Meal */}
-        {featuredMeal && (
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Featured Meal of the Day</h2>
-                <div>
-                <Image
-                  src={featuredMeal.imageUrl}
-                  alt={featuredMeal.name}
-                  width={150}
-                  height={150}
-                  className="rounded-lg object-cover"
-                />
-                </div>
-            <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
-              <div className="flex items-center">
-                <div className="ml-4">
-                  <h3 className="text-xl font-bold">{featuredMeal.name}</h3>
-                  <p className="text-gray-700">{featuredMeal.description}</p>
-                  <p className="text-yellow-500 font-semibold">${featuredMeal.price.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
-        {/* Popular Meals */}
+        {/* Slideshow for Popular Meals */}
         <section>
           <h2 className="text-2xl font-semibold mb-4">Popular Meals</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Carousel
+            showThumbs={false}
+            infiniteLoop
+            autoPlay
+            showStatus={false}
+            showIndicators={false}
+            className="popular-meals-carousel"
+          >
             {(searchQuery ? searchResults : popularMeals).map((meal) => (
-              <div key={meal.id} className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+              <div key={meal.customId} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
                 <Image
                   src={meal.imageUrl}
                   alt={meal.name}
-                  width={150}
-                  height={150}
-                  className="rounded-lg object-cover"
+                  width={500}
+                  height={300}
+                  className="rounded-lg object-cover h-[300px]"
                 />
-                <h3 className="text-xl font-semibold mt-2">{meal.name}</h3>
+                <h3 className="text-xl font-semibold mt-2 text-black">{meal.name}</h3>
                 <p className="text-gray-700">{meal.description}</p>
                 <p className="text-yellow-500 font-semibold">${meal.price.toFixed(2)}</p>
               </div>
             ))}
-          </div>
+          </Carousel>
+        </section>
+
+        {/* Restaurant Listings */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold mb-8">Restaurants</h2>
+          {loading ? (
+            <div className="flex justify-center items-center min-h-screen bg-white text-black">
+              <p>Loading...</p>
+            </div>
+          ) : error ? (
+            <div className="flex justify-center items-center min-h-screen bg-red-100 text-red-500">
+              <p>{error}</p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {restaurants.map((restaurant) => (
+                <div key={restaurant.customId} className="flex flex-col sm:flex-row items-center bg-white shadow-md rounded-lg p-6">
+                  <Image
+                    src={restaurant.imageUrl}
+                    alt={restaurant.name}
+                    width={500}
+                    height={300}
+                    className="w-full sm:w-1/4 h-40 object-cover rounded-lg"
+                  />
+                  <div className="sm:ml-6 mt-4 sm:mt-0 sm:w-3/4 w-full">
+                    <h2 className="text-2xl font-semibold text-black">{restaurant.name}</h2>
+                    <p className="mt-2 text-gray-600">{restaurant.description}</p>
+                    <button
+                      onClick={() => toggleMeals(restaurant.customId)}
+                      className="mt-4 inline-block text-yellow-500 hover:text-yellow-600 underline"
+                    >
+                      {expanded === restaurant.customId ? 'Hide Meals' : 'View Meals'}
+                    </button>
+                    {expanded === restaurant.customId && (
+                      <div className="mt-4 bg-gray-50 p-4 rounded-md w-full">
+                        <h3 className="font-semibold text-lg text-gray-700">Meals</h3>
+                        {restaurant.meals.length > 0 ? (
+                          <ul className="mt-2 space-y-2">
+                            {restaurant.meals.map((meal) => (
+                              <li key={meal.customId} className="border-b py-2">
+                                <p className="text-gray-700"><strong>{meal.name}</strong> - ${meal.price}</p>
+                                <p className="text-gray-500">{meal.description}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-500">No meals available for this restaurant.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
-
     </div>
   );
 };
 
-export default LandingPage;
+export default CombinedPage;

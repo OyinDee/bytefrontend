@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-
+import Layout from '../layout'
 const AddRestaurant = () => {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -41,6 +41,11 @@ const AddRestaurant = () => {
   };
 
   const handleSubmit = async (e: any) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
     e.preventDefault();
     console.log({name,
       description,
@@ -49,18 +54,33 @@ const AddRestaurant = () => {
       email,
       imageUrl,})
     try {
-      await axios.post('https://mongobyte.onrender.com/api/v1/restaurants/create', {
+      await axios.post('http://localhost:8080/api/v1/restaurants/create', {
         name,
         description,
         location,
         contactNumber,
         email,
-        imageUrl,
-      });
-      router.push('/admin/success');
-    } catch (error) {
-      setError('Failed to add restaurant. Please try again.');
-    }
+        imageUrl }, { headers: {'Authorization': `Bearer ${JSON.parse(token)}` }});
+        alert("Done")
+    } catch (error) {        
+      if (error instanceof AxiosError) {
+      console.log("error")
+        // AxiosError provides detailed error information
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            setError(error.response.data.message || 'Failed to add restaurant. Please try again.');
+            console.log(error)
+        } else if (error.request) {
+            // No response was received
+            setError('No response received from server. Please try again.');
+        } else {
+            // Other errors related to the setup of the request
+            setError('An error occurred while adding the restaurant. Please try again.');
+        }
+    } else {
+        // Handle non-Axios errors
+        setError('An unexpected error occurred. Please try again.');
+    }}
   };
 
   return (

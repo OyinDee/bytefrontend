@@ -55,10 +55,10 @@ const Login: React.FC = () => {
         router.push('/signupsuccess');
       } else if (response.status === 202) {
         
-        const decodedToken = jwtDecode(response.data.token);
+
         localStorage.setItem('token', JSON.stringify(response.data.token));
         
-        localStorage.setItem('byteUser', JSON.stringify(decodedToken));
+        localStorage.setItem('byteUser', JSON.stringify(response.data.user));
         if (authContext) {
           authContext.setIsAuthenticated(true); 
         }
