@@ -105,7 +105,7 @@ const CombinedPage: React.FC = () => {
 
   return (
     <div>
-      <main className="p-4 lg:p-8 bg-white text-black mt-12 mb-20">
+      <main className="p-4 lg:p-8 bg-white text-black pt-20 pb-20">
 
         {/* Slideshow for Popular Meals */}
         <section>
