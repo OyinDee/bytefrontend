@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import Image from 'next/image'
 interface Meal {
     name: string;
     image: string;
@@ -114,7 +114,7 @@ const MealManagement: React.FC = () => {
                     />
                     {errors.image && <span className="text-red-500 text-sm">{errors.image}</span>}
                     {meal.image && (
-                        <img src={meal.image} alt="Preview" className="mt-2 sm:mt-4 w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-md border border-gray-300" />
+                        <Image src={meal.image} width={500} height={500} alt="Preview" className="mt-2 sm:mt-4 w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-md border border-gray-300" />
                     )}
                 </div>
 
@@ -216,7 +216,7 @@ const MealManagement: React.FC = () => {
                         {meals.map((m, index) => (
                             <li key={index} className="p-4 sm:p-6 border border-gray-300 rounded-lg">
                                 <p className="font-semibold text-lg sm:text-xl mb-1">{m.name}</p>
-                                <img src={m.image} alt={m.name} className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-md mb-2 sm:mb-4" />
+                                <Image src={m.image} width={500} height={500}  alt={m.name} className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-md mb-2 sm:mb-4" />
                                 <p><span className="font-semibold">Price:</span> {m.price} Bytes</p>
                                 <p><span className="font-semibold">Per:</span> {m.per}</p>
                                 <p><span className="font-semibold">Countable:</span> {m.countable ? 'Yes' : 'No'}</p>
