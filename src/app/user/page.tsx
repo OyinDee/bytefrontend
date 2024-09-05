@@ -6,9 +6,9 @@ import Image from 'next/image';
 import { Carousel } from 'react-responsive-carousel';
 import AOS from "aos";
 import "aos/dist/aos.css";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import RestaurantListings from "@/components/AllRestaurants";
 import { Restaurant } from "../../components/types";
-
 
 interface Meal {
   customId: string;
@@ -21,7 +21,6 @@ interface Meal {
   available: boolean; // If the meal is currently available
   count?: number; // Optional, only present if countable is true
 }
-
 
 const demoPopularMeals: Meal[] = [
   {
@@ -58,7 +57,6 @@ const demoPopularMeals: Meal[] = [
   },
 ];
 
-
 const CombinedPage: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [popularMeals, setPopularMeals] = useState<Meal[]>(demoPopularMeals);
@@ -70,6 +68,8 @@ const CombinedPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    AOS.init();
+
     const fetchRestaurants = async () => {
       try {
         const response = await axios.get('https://mongobyte.onrender.com/api/v1/restaurants');
@@ -105,7 +105,7 @@ const CombinedPage: React.FC = () => {
 
   return (
     <div>
-      <main className="p-4 lg:p-8">
+      <main className="p-4 lg:p-8 bg-white text-black mt-12 mb-20">
 
         {/* Slideshow for Popular Meals */}
         <section>
@@ -125,10 +125,11 @@ const CombinedPage: React.FC = () => {
                   alt={meal.name}
                   width={500}
                   height={300}
+                  layout="responsive"
                   className="rounded-lg object-cover h-[300px]"
                 />
                 <h3 className="text-xl font-semibold mt-2 text-black">{meal.name}</h3>
-                <p className="text-gray-700">{meal.description}</p>
+                <p className="text-gray-600">{meal.description}</p>
                 <p className="text-yellow-500 font-semibold">${meal.price.toFixed(2)}</p>
               </div>
             ))}
@@ -149,7 +150,10 @@ const CombinedPage: React.FC = () => {
           ) : (
             <div className="space-y-8">
               {restaurants.map((restaurant) => (
-                <div key={restaurant.customId} className="flex flex-col sm:flex-row items-center bg-white shadow-md rounded-lg p-6">
+                <div
+                  key={restaurant.customId}
+                  className="flex flex-col sm:flex-row items-center bg-white shadow-md rounded-lg p-6 border border-gray-200"
+                >
                   <Image
                     src={restaurant.imageUrl}
                     alt={restaurant.name}
@@ -173,7 +177,7 @@ const CombinedPage: React.FC = () => {
                           <ul className="mt-2 space-y-2">
                             {restaurant.meals.map((meal) => (
                               <li key={meal.customId} className="border-b py-2">
-                                <p className="text-gray-700"><strong>{meal.name}</strong> - ${meal.price}</p>
+                                <p className="text-black"><strong>{meal.name}</strong> - ${meal.price}</p>
                                 <p className="text-gray-500">{meal.description}</p>
                               </li>
                             ))}
