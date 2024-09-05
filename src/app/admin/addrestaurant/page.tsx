@@ -54,7 +54,7 @@ const AddRestaurant = () => {
       email,
       imageUrl,})
     try {
-      await axios.post('http://localhost:8080/api/v1/restaurants/create', {
+      await axios.post('https://mongobyte.onrender.com/api/v1/restaurants/create', {
         name,
         description,
         location,

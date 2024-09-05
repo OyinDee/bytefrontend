@@ -5,30 +5,36 @@ import { Meal } from './types';
 
 const meals: Meal[] = [
   {
-    name: 'Jollof Rice',
-    image: '/Images/jollof.jpg',
-    price: 500,
-    per: 'plate',
+    customId: 'hgtr56',
+    name: 'Margherita Pizza',
+    description: 'Fresh tomatoes, mozzarella cheese, and basil.',
+    price: 10.99,
+    imageUrl: '/images/fc.jpg',
+    per: 'per slice',
     countable: true,
-    count: 20,
+    available: true,
+    count: 10, // Only applicable when countable is true
+  },
+  {
+    customId: 'trhf76',
+    name: 'Caesar Salad',
+    description: 'Crisp romaine lettuce with Caesar dressing and croutons.',
+    price: 8.99,
+    imageUrl: '/images/fc.jpg',
+    per: 'per bowl',
+    countable: false, // This meal doesn't have a countable quantity
     available: true,
   },
   {
-    name: 'Fried Chicken',
-    image: '/Images/chicken.jpg',
-    price: 300,
-    per: 'piece',
+    customId: 'dsfe43',
+    name: 'Chicken Tacos',
+    description: 'Spicy chicken with fresh toppings in soft tortillas.',
+    price: 9.99,
+    imageUrl: '/images/fc.jpg',
+    per: 'per taco',
     countable: true,
-    count: 15,
-    available: false,
-  },
-  {
-    name: 'Pounded Yam and Egusi',
-    image: '/Images/pounded_yam.jpg',
-    price: 1000,
-    per: 'plate',
-    countable: false,
-    available: true,
+    available: false, // Meal is not available
+    count: 5, // Only applicable when countable is true
   },
 ];
 

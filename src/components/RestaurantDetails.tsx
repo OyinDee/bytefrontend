@@ -26,9 +26,9 @@ const RestaurantDetails: React.FC<RestaurantDetailsProps> = ({ restaurant, menuI
         {/* Restaurant Header */}
         <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
           <div className="relative h-64 w-full rounded-lg overflow-hidden">
-            {restaurant.image ? (
+            {restaurant.imageUrl ? (
               <Image
-                src={restaurant.image}
+                src={restaurant.imageUrl}
                 alt={restaurant.name}
                 layout="fill"
                 objectFit="contain"
@@ -61,9 +61,9 @@ const RestaurantDetails: React.FC<RestaurantDetailsProps> = ({ restaurant, menuI
                 <div key={meal.name} className="flex flex-col items-start bg-white p-4 rounded-lg shadow-sm">
                   <div className="flex items-center mb-4">
                     <div className="relative h-16 w-16 rounded-full overflow-hidden mr-4">
-                      {meal.image ? (
+                      {meal.imageUrl ? (
                         <Image
-                          src={meal.image}
+                          src={meal.imageUrl}
                           alt={meal.name}
                           layout="fill"
                           objectFit="cover"

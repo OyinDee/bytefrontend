@@ -15,7 +15,7 @@ const One: React.FC<OneProps> = ({ restaurantName, meals }) => {
         {meals.map((meal, index) => (
           <div key={index} className={`relative bg-white shadow-lg rounded-lg overflow-hidden ${!meal.available ? 'opacity-50' : ''}`}>
             <Image 
-              src={meal.image} 
+              src={meal.imageUrl} 
               alt={meal.name} 
               width={400} 
               height={300} 

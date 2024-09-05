@@ -1,7 +1,7 @@
 // types.ts
 export type Meal = {
     name: string;
-    image: string;
+    imageUrl: string;
     price: number;
     customId: string;
     per: string;

@@ -51,11 +51,11 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurants }) 
           <div className="space-y-4">
             {filteredRestaurants.length > 0 ? (
               filteredRestaurants.map((restaurant) => (
-                <div key={restaurant.id} className="flex items-center bg-white p-4 rounded-lg shadow-sm mb-4">
+                <div key={restaurant.customId} className="flex items-center bg-white p-4 rounded-lg shadow-sm mb-4">
                   <div className="relative h-24 w-24 rounded-lg overflow-hidden mr-4">
-                    {restaurant.image ? (
+                    {restaurant.imageUrl ? (
                       <Image
-                        src={restaurant.image}
+                        src={restaurant.imageUrl}
                         alt={restaurant.name}
                         layout="fill"
                         objectFit="cover"
@@ -71,7 +71,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurants }) 
                     <h2 className="text-xl font-semibold">{restaurant.name}</h2>
                     <p className="text-gray-600">{restaurant.description}</p>
                     <p className="text-yellow-500 font-bold">{restaurant.rating} ⭐</p>
-                    <a href={`/restaurant/${restaurant.id}`} className="text-blue-500 hover:text-blue-400 mt-2 block">View Details</a>
+                    <a href={`/restaurant/${restaurant.customId}`} className="text-blue-500 hover:text-blue-400 mt-2 block">View Details</a>
                   </div>
                 </div>
               ))

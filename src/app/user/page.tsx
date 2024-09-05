@@ -16,15 +16,12 @@ interface Meal {
   description: string;
   price: number;
   imageUrl: string;
+  per: string; // E.g., "per serving" or "per slice"
+  countable: boolean; // Determines if this meal has a countable quantity
+  available: boolean; // If the meal is currently available
+  count?: number; // Optional, only present if countable is true
 }
 
-const demoFeaturedMeal: Meal = {
-  customId: 'fdyg34',
-  name: 'Spaghetti Carbonara',
-  description: 'Classic Italian pasta with creamy sauce and pancetta.',
-  price: 12.99,
-  imageUrl: '/images/spaghetti-carbonara.jpg',
-};
 
 const demoPopularMeals: Meal[] = [
   {
@@ -33,26 +30,37 @@ const demoPopularMeals: Meal[] = [
     description: 'Fresh tomatoes, mozzarella cheese, and basil.',
     price: 10.99,
     imageUrl: '/images/fc.jpg',
+    per: 'per slice',
+    countable: true,
+    available: true,
+    count: 10, // Only applicable when countable is true
   },
   {
     customId: 'trhf76',
     name: 'Caesar Salad',
     description: 'Crisp romaine lettuce with Caesar dressing and croutons.',
     price: 8.99,
-    imageUrl: '/images/caesar-salad.jpg',
+    imageUrl: '/images/fc.jpg',
+    per: 'per bowl',
+    countable: false, // This meal doesn't have a countable quantity
+    available: true,
   },
   {
     customId: 'dsfe43',
     name: 'Chicken Tacos',
     description: 'Spicy chicken with fresh toppings in soft tortillas.',
     price: 9.99,
-    imageUrl: '/images/chicken-tacos.jpg',
+    imageUrl: '/images/fc.jpg',
+    per: 'per taco',
+    countable: true,
+    available: false, // Meal is not available
+    count: 5, // Only applicable when countable is true
   },
 ];
 
+
 const CombinedPage: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [featuredMeal, setFeaturedMeal] = useState<Meal | null>(demoFeaturedMeal);
   const [popularMeals, setPopularMeals] = useState<Meal[]>(demoPopularMeals);
   const [searchQuery, setSearchQuery] = useState('');
   const [restaurantSearchResults, setRestaurantSearchResults] = useState<Restaurant[]>([]);
@@ -64,7 +72,7 @@ const CombinedPage: React.FC = () => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/restaurants');
+        const response = await axios.get('https://mongobyte.onrender.com/api/v1/restaurants');
         setRestaurants(response.data);
       } catch (error) {
         setError('Error fetching restaurants. Please try again.');
