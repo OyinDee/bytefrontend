@@ -16,10 +16,10 @@ interface Meal {
   description: string;
   price: number;
   imageUrl: string;
-  per: string; // E.g., "per serving" or "per slice"
-  countable: boolean; // Determines if this meal has a countable quantity
-  available: boolean; // If the meal is currently available
-  count?: number; // Optional, only present if countable is true
+  per: string;
+  countable: boolean;
+  available: boolean;
+  count?: number;
 }
 
 const demoPopularMeals: Meal[] = [
@@ -32,7 +32,7 @@ const demoPopularMeals: Meal[] = [
     per: 'per slice',
     countable: true,
     available: true,
-    count: 10, // Only applicable when countable is true
+    count: 10,
   },
   {
     customId: 'trhf76',
@@ -41,7 +41,7 @@ const demoPopularMeals: Meal[] = [
     price: 8.99,
     imageUrl: '/images/fc.jpg',
     per: 'per bowl',
-    countable: false, // This meal doesn't have a countable quantity
+    countable: false,
     available: true,
   },
   {
@@ -52,8 +52,8 @@ const demoPopularMeals: Meal[] = [
     imageUrl: '/images/fc.jpg',
     per: 'per taco',
     countable: true,
-    available: false, // Meal is not available
-    count: 5, // Only applicable when countable is true
+    available: false,
+    count: 5,
   },
 ];
 
@@ -68,10 +68,7 @@ const CombinedPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    AOS.init({
-      duration: 1200,
-      once: true, 
-    });   AOS.init();
+    AOS.init({ duration: 1000 });
 
     const fetchRestaurants = async () => {
       try {
@@ -108,11 +105,28 @@ const CombinedPage: React.FC = () => {
 
   return (
     <div>
-      <main className="p-4 lg:p-8 bg-white text-black pt-20 pb-20">
+      <main className="p-4 lg:p-8 bg-white text-black pt-20 pb-20 min-h-screen">
+        {/* Search Bar */}
+        <section className="mb-6">
+          <div className="flex justify-center items-center space-x-4">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search meals or restaurants..."
+              className="p-2 w-full lg:w-1/2 rounded border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+            />
+            <button
+              onClick={handleSearch}
+              className="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors duration-200"
+            >
+              Search
+            </button>
+          </div>
+        </section>
 
-        {/* Slideshow for Popular Meals */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Popular Meals</h2>
+          <h2 className="text-2xl font-semibold mb-4">Popular Combos</h2>
           <Carousel
             showThumbs={false}
             infiniteLoop
@@ -134,6 +148,7 @@ const CombinedPage: React.FC = () => {
                 <h3 className="text-xl font-semibold mt-2 text-black">{meal.name}</h3>
                 <p className="text-gray-600">{meal.description}</p>
                 <p className="text-yellow-500 font-semibold">${meal.price.toFixed(2)}</p>
+                <button className='btn w-full bg-yellow-500 mt-2 text-white p-2'>Add To Cart!</button>
               </div>
             ))}
           </Carousel>
@@ -152,7 +167,7 @@ const CombinedPage: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-8">
-              {restaurants.map((restaurant) => (
+              {(searchQuery ? restaurantSearchResults : restaurants).map((restaurant) => (
                 <div
                   key={restaurant.customId}
                   className="flex flex-col sm:flex-row items-center bg-white shadow-md rounded-lg p-6 border border-gray-200"

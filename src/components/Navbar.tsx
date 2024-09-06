@@ -8,11 +8,12 @@ import {
   UserIcon,
   ClockIcon,
   PlusCircleIcon,
+  ShoppingCartIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { AuthContext } from './AuthCheck'; 
-import { jwtDecode } from 'jwt-decode'; 
+import { AuthContext } from './AuthCheck';
+import { jwtDecode } from 'jwt-decode';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -31,6 +32,8 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('byteUser');
+
     setIsAuthenticated(false);
     router.push('/login');
   };
@@ -47,6 +50,8 @@ const Navbar: React.FC = () => {
 
         if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
           localStorage.removeItem('token');
+    localStorage.removeItem('byteUser');
+
           setIsAuthenticated(false);
           if (!isAuthRoute) router.push('/login');
         } else {
@@ -54,6 +59,8 @@ const Navbar: React.FC = () => {
         }
       } catch (error) {
         localStorage.removeItem('token');
+    localStorage.removeItem('byteUser');
+
         setIsAuthenticated(false);
         if (!isAuthRoute) router.push('/login');
       }
@@ -65,6 +72,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
+      {/* Mobile Navbar */}
       <nav
         className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden"
         style={{ height: '60px' }}
@@ -99,6 +107,15 @@ const Navbar: React.FC = () => {
                     >
                       <PlusCircleIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Fund</span>
+                    </Link>
+                  </li>
+                  <li className="flex flex-col items-center">
+                    <Link
+                      href="/user/cart"
+                      className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}
+                    >
+                      <ShoppingCartIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Cart</span>
                     </Link>
                   </li>
                   <li className="flex flex-col items-center">
@@ -163,6 +180,9 @@ const Navbar: React.FC = () => {
               </Link>
               <Link href="/user/fund" className={getLinkClassName('/user/fund')}>
                 Fund Account
+              </Link>
+              <Link href="/user/cart" className={getLinkClassName('/user/cart')}>
+                Cart
               </Link>
               <Link href="/user/profile" className={getLinkClassName('/user/profile')}>
                 Profile

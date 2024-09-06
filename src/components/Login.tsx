@@ -57,8 +57,9 @@ const Login: React.FC = () => {
         
 
         localStorage.setItem('token', JSON.stringify(response.data.token));
+        const decodedToken = jwtDecode<any>(response.data.token);
         
-        localStorage.setItem('byteUser', JSON.stringify(response.data.user));
+        localStorage.setItem('byteUser', JSON.stringify(decodedToken));
         if (authContext) {
           authContext.setIsAuthenticated(true); 
         }

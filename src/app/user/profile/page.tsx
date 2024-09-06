@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'; 
 
 interface Transaction {
   date: string;
@@ -36,13 +37,18 @@ const Profile: React.FC = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('https://mongobyte.onrender.com/api/v1/users/getProfile', {
+            const response = await axios.get('https://mongobyte.onrender.com/api/v1/users/getProfile', {
             headers: {
               'Authorization': `Bearer ${JSON.parse(token)}`,
             },
           });
-          setUser(response.data);
-          setBio(response.data.bio || '');
+          console.log(response.data)
+          const decodedToken = jwtDecode<any>(response.data.token);   
+          localStorage.setItem('token', JSON.stringify(response.data.token))
+
+          localStorage.setItem('byteUser', JSON.stringify(decodedToken))
+          setUser(decodedToken.user);
+          setBio(decodedToken.user.bio || '');
           setLoading(false); // Stop loading once data is fetched
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -98,7 +104,8 @@ const Profile: React.FC = () => {
       );
       if (updateProfileResponse.data.token) {
         localStorage.setItem('token', JSON.stringify(updateProfileResponse.data.token));
-        console.log("Token updated");
+        const decodedToken = jwtDecode<any>(updateProfileResponse.data.token);   
+        localStorage.setItem('byteUser', JSON.stringify(decodedToken))
       }
     } catch (error) {
       console.error('Error updating user profile:', error);
