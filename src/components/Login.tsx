@@ -35,38 +35,42 @@ const Login: React.FC = () => {
       setErrors(validationErrors);
       return;
     }
-
+  
     setErrors([]);
     setIsLoading(true); // Show loader
-
+  
     try {
-      // Replace with your actual API endpoint
       const response = await axios.post('https://mongobyte.onrender.com/api/v1/auth/login', {
         username,
         password,
       });
+      console.log(response.data); 
 
       if (response.status === 200) {
         router.push('/signupsuccess');
       } else if (response.status === 202) {
         const token = response.data.token;
-        
+  
+        if (typeof token !== 'string' || !token.trim()) {
+          throw new Error('Invalid token format.');
+        }
+  
         Cookies.set('token', token, {
-          secure: process.env.NODE_ENV === 'production',  // Only set the cookie securely in production
-          sameSite: 'Lax',  
-          expires: 2 
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'Lax',
+          expires: 2
         });
-
+  
         const decodedToken = jwtDecode<any>(token);
-
+  
         Cookies.set('byteUser', JSON.stringify(decodedToken), {
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'Lax',
           expires: 2
         });
-
+  
         if (authContext) {
-          authContext.setIsAuthenticated(true); 
+          authContext.setIsAuthenticated(true);
         }
         router.push('/user/');
       }
@@ -80,7 +84,6 @@ const Login: React.FC = () => {
           setErrors(["Network error. Please check your connection."]);
         }
       } else if (error instanceof Error) {
-        // General error handling
         setErrors([error.message || "An error occurred. Please try again."]);
       } else {
         setErrors(["An unexpected error occurred."]);
@@ -89,6 +92,7 @@ const Login: React.FC = () => {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="relative min-h-screen bg-black">

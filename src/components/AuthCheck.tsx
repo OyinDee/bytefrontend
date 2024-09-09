@@ -35,13 +35,14 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const token = Cookies.get('token');
     const currentPath = window.location.pathname;
-
+  
     const isAuthRoute = ['/login', '/signup', '/forgot-password', '/', '/restaurant/login'].includes(currentPath);
-
+  
     if (token) {
       try {
         const decodedToken = jwtDecode<any>(token);
-
+        // console.log('Decoded Token:', decodedToken);
+  
         if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
           Cookies.remove('token');
           setIsAuthenticated(false);
@@ -49,7 +50,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (!isAuthRoute) router.push('/login');
         } else {
           setIsAuthenticated(true);
-
+  
           if (decodedToken.user) {
             setUserType('user');
           } else if (decodedToken.restaurant) {
@@ -57,10 +58,11 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           } else {
             setUserType(null);
           }
-
+  
           Cookies.set('byteUser', JSON.stringify(decodedToken), { expires: 7 });
         }
       } catch (error) {
+        console.error('Error decoding token:', error);
         Cookies.remove('token');
         setIsAuthenticated(false);
         setUserType(null);
@@ -72,6 +74,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       if (!isAuthRoute) router.push('/login');
     }
   }, [router]);
+  
 
   const addNotification = (notification: Notification, type: 'user' | 'restaurant') => {
     if (type === 'user') {

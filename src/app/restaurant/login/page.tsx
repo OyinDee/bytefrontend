@@ -18,7 +18,7 @@ const RestaurantLogin: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post('https://mongobyte.onrender.com/restaurants/login', {
+      const response = await axios.post('https://mongobyte.onrender.com/api/v1/restaurants/login', {
         email,
         password,
       });
