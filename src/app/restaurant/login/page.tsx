@@ -23,10 +23,13 @@ const RestaurantLogin: React.FC = () => {
       });
 
       if (response.status === 200) {
-
         const { token, restaurant } = response.data;
-        localStorage.setItem('token', token)
-        localStorage.setItem('byteUser', JSON.stringify(restaurant))
+        
+        // Check if window is defined to avoid server-side errors
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', token);
+          localStorage.setItem('byteUser', JSON.stringify(restaurant));
+        }
 
         router.push('/restaurant/dashboard');
       }
@@ -70,7 +73,7 @@ const RestaurantLogin: React.FC = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+              className="mt-1 block w-full px-3 py-2 text-black border border-gray-300 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
               required
             />
           </div>
