@@ -1,24 +1,22 @@
 "use client";
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import {
   HomeIcon,
   ArrowRightOnRectangleIcon,
   ShoppingBagIcon,
   UserIcon,
+  ClockIcon,
   PlusCircleIcon,
   ShoppingCartIcon,
   BellIcon,
+  CogIcon,
+  CurrencyDollarIcon, // Fund Wallet icon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthContext } from './AuthCheck';
-import Cookies from 'js-cookie';
-
-interface Notification {
-  id: string;
-  message: string;
-}
+import {jwtDecode} from 'jwt-decode';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -29,88 +27,170 @@ const Navbar: React.FC = () => {
     throw new Error("Navbar must be used within an AuthProvider");
   }
 
-  const { isAuthenticated, userType, setIsAuthenticated, userNotifications, restaurantNotifications } = authContext;
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { isAuthenticated, setIsAuthenticated } = authContext;
+  const decodedToken: any = localStorage.getItem('token')
+    ? jwtDecode(localStorage.getItem('token')!)
+    : null;
+  const userType = decodedToken?.user?.type || decodedToken?.restaurant?.type || 'user';
 
-  // Define getLinkClassName inside the component
   const getLinkClassName = (path: string) => {
     return pathname === path ? 'text-yellow-400' : 'hover:text-gray-400 transition-colors duration-200';
   };
 
   const handleLogout = () => {
-    Cookies.remove('token');
-    Cookies.remove('byteUser');
-
-    setIsAuthenticated(false);
-    router.push('/login');
+    const logout = confirm("Sure you want to logout?")
+    if(logout){
+      localStorage.removeItem('token');
+      localStorage.removeItem('byteUser');
+      setIsAuthenticated(false);
+      router.push('/login');
+    }
+    else{
+      alert("Thanks, I guess...")
+    }
   };
 
-  const handleNotificationClick = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const currentPath = window.location.pathname;
+    const isAuthRoute = currentPath === '/login' || currentPath === '/signup' || currentPath === '/forgot-password' || currentPath === '/';
 
-  const notifications = [
-    { id: '1', message: 'Someone gave you bytes!' },
-    { id: '2', message: 'Message from support' },
-  ];
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<any>(token);
+        if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('byteUser');
+          setIsAuthenticated(false);
+          if (!isAuthRoute) router.push('/login');
+        } else {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('byteUser');
+        setIsAuthenticated(false);
+        if (!isAuthRoute) router.push('/login');
+      }
+    } else {
+      setIsAuthenticated(false);
+      if (!isAuthRoute) router.push('/login');
+    }
+  }, [isAuthenticated, router, setIsAuthenticated]);
 
   return (
     <>
       {/* Mobile Navbar */}
       <nav className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden" style={{ height: '60px' }}>
         <div className="flex items-center justify-between p-2">
-          <div className="flex flex-1 justify-around">
-            <ul className="flex items-center w-full justify-around space-x-2">
+          <div className="flex flex-1 justify-around mt-2">
+            <ul className="flex items-center w-full justify-around">
               {isAuthenticated ? (
-                userType === 'user' ? (
-                  <>
-                    <NavItem href="/user" icon={<HomeIcon className="w-6 h-6" />} label="Home" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/offers" icon={<ShoppingBagIcon className="w-6 h-6" />} label="Offers" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/fund" icon={<PlusCircleIcon className="w-6 h-6" />} label="Fund" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/cart" icon={<ShoppingCartIcon className="w-6 h-6" />} label="Cart" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/profile" icon={<UserIcon className="w-6 h-6" />} label="Profile" getLinkClassName={getLinkClassName} />
-                    <NotificationItem
-                      href="/user/notifications"
-                      icon={<BellIcon className="w-6 h-6" />}
-                      notifications={userNotifications}
-                      isDropdownOpen={isDropdownOpen}
-                      onClick={handleNotificationClick}
-                      label="Notifs"
-                    />
-                    <NavItem
-                      href="#"
-                      icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
-                      label="Logout"
-                      getLinkClassName={getLinkClassName}
-                      onClick={handleLogout}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <NavItem href="/restaurant/dashboard" icon={<HomeIcon className="w-6 h-6" />} label="Dashboard" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/restaurant/orders" icon={<ShoppingBagIcon className="w-6 h-6" />} label="Orders" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/restaurant/menu" icon={<PlusCircleIcon className="w-6 h-6" />} label="Menu" getLinkClassName={getLinkClassName} />
-                    <NotificationItem
-                      href="/restaurant/notifications"
-                      icon={<BellIcon className="w-6 h-6" />}
-                      notifications={restaurantNotifications}
-                      isDropdownOpen={isDropdownOpen}
-                      onClick={handleNotificationClick}
-                      label="Notifs"
-                    />
-                    <NavItem
-                      href="#"
-                      icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
-                      label="Logout"
-                      getLinkClassName={getLinkClassName}
-                      onClick={handleLogout}
-                    />
-                  </>
-                )
+                <>
+                  {/* Common links */}
+                  <li className="flex flex-col items-center">
+                    <Link href="/user" className={`flex flex-col items-center ${getLinkClassName('/user')}`}>
+                      <HomeIcon className="h-5 w-5 mb-1" />
+                    </Link>
+                  </li>
+                  <li className="flex flex-col items-center">
+                    <Link href="/notifications" className={`flex flex-col items-center ${getLinkClassName('/notifications')}`}>
+                      <BellIcon className="h-5 w-5 mb-1" />
+
+                    </Link>
+                  </li>
+                  
+                  {/* User-specific tabs */}
+                  {userType === 'user' && (
+                    <>
+                      <li className="flex flex-col items-center">
+                        <Link href="/user/offers" className={`flex flex-col items-center ${getLinkClassName('/user/offers')}`}>
+                          <ShoppingBagIcon className="h-5 w-5 mb-1" />
+
+                        </Link>
+                      </li>
+                      <li className="flex flex-col items-center">
+                        <Link href="/user/cart" className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}>
+                          <ShoppingCartIcon className="h-5 w-5 mb-1" />
+
+                        </Link>
+                      </li>
+                      <li className="flex flex-col items-center">
+                        <Link href="/user/fund" className={`flex flex-col items-center ${getLinkClassName('/user/fund')}`}>
+                          <CurrencyDollarIcon className="h-5 w-5 mb-1" />
+
+                        </Link>
+                      </li>
+
+                    </>
+                  )}
+
+                  {/* Restaurant-specific tabs */}
+                  {userType === 'restaurant' && (
+                    <>
+                      <li className="flex flex-col items-center">
+                        <Link href="/restaurant/orders" className={`flex flex-col items-center ${getLinkClassName('/restaurant/orders')}`}>
+                          <ClockIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Orders</span>
+                        </Link>
+                      </li>
+                      <li className="flex flex-col items-center">
+                        <Link href="/restaurant/edit" className={`flex flex-col items-center ${getLinkClassName('/restaurant/edit')}`}>
+                          <UserIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Edit</span>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  {/* Admin-specific tabs */}
+                  {userType === 'admin' && (
+                    <>
+                      <li className="flex flex-col items-center">
+                        <Link href="/admin/dashboard" className={`flex flex-col items-center ${getLinkClassName('/admin/dashboard')}`}>
+                          <CogIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Dashboard</span>
+                        </Link>
+                      </li>
+                      <li className="flex flex-col items-center">
+                        <Link href="/admin/orders" className={`flex flex-col items-center ${getLinkClassName('/admin/orders')}`}>
+                          <ClockIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Orders</span>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+
+                  <li className="flex flex-col items-center">
+                    <Link href="/profile" className={`flex flex-col items-center ${getLinkClassName('/profile')}`}>
+                      <UserIcon className="h-5 w-5 mb-1" />
+
+                    </Link>
+                  </li>
+
+
+                  <li className="flex flex-col items-center">
+                    <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+
+                    </button>
+                  </li>
+                </>
               ) : (
                 <>
-                  <NavItem href="/signup" icon={<PlusCircleIcon className="w-6 h-6" />} label="Signup" getLinkClassName={getLinkClassName} />
-                  <NavItem href="/login" icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />} label="Login" getLinkClassName={getLinkClassName} />
+                  <li className="flex flex-col items-center">
+                    <Link href="/signup" className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
+                      <PlusCircleIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Signup</span>
+                    </Link>
+                  </li>
+                  <li className="flex flex-col items-center">
+                    <Link href="/login" className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Login</span>
+                    </Link>
+                  </li>
                 </>
               )}
             </ul>
@@ -119,101 +199,85 @@ const Navbar: React.FC = () => {
       </nav>
 
       {/* Navbar for large screens */}
-      <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6">
-        <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
-          <Link href="/restaurant/login" className="text-2xl font-bold text-white">
-            Byte
+      <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6 lg:mb-0">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link href="/restaurant/login" className="text-2xl font-bold">
+            Byte!
           </Link>
-          <div className="hidden lg:flex lg:space-x-6 lg:ml-auto lg:mr-4">
-            {isAuthenticated ? (
-              userType === 'user' ? (
-                <>
-                  <NavLink href="/user" label="Home" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/offers" label="Offers" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/fund" label="Fund" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/cart" label="Cart" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/profile" label="Profile" getLinkClassName={getLinkClassName} />
+          {isAuthenticated ? (
+            <div className="hidden lg:flex lg:space-x-6">
+              {/* Common links */}
+              <Link href="/user/" className={getLinkClassName('/user')}>
+                Home
+              </Link>
+              <Link href="/notifications" className={getLinkClassName('/notifications')}>
+                Notifications
+              </Link>
 
-                  <NavItem
-                    href="#"
-                    icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
-                    label="Logout"
-                    getLinkClassName={getLinkClassName}
-                    onClick={handleLogout}
-                  />
-                </>
-              ) : (
+              {/* User-specific links */}
+              {userType === 'user' && (
                 <>
-                  <NavLink href="/restaurant/dashboard" label="Dashboard" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/restaurant/orders" label="Orders" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/restaurant/menu" label="Menu" getLinkClassName={getLinkClassName} />
-
-                  <NavItem
-                    href="#"
-                    icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
-                    label="Logout"
-                    getLinkClassName={getLinkClassName}
-                    onClick={handleLogout}
-                  />
+                  <Link href="/user/offers" className={getLinkClassName('/user/offers')}>
+                    Offers
+                  </Link>
+                  <Link href="/user/cart" className={getLinkClassName('/user/cart')}>
+                    Cart
+                  </Link>
+                  <Link href="/user/fund" className={getLinkClassName('/user/fund')}>
+                    Fund Wallet
+                  </Link>
+                  <Link href="/user/orders" className={getLinkClassName('/user/orders')}>
+                    Orders
+                  </Link>
                 </>
-              )
-            ) : (
-              <>
-                <NavLink href="/signup" label="Signup" getLinkClassName={getLinkClassName} />
-                <NavLink href="/login" label="Login" getLinkClassName={getLinkClassName} />
-              </>
-            )}
-          </div>
+              )}
+
+              {/* Restaurant-specific links */}
+              {userType === 'restaurant' && (
+                <>
+                  <Link href="/restaurant/orders" className={getLinkClassName('/restaurant/orders')}>
+                    Orders
+                  </Link>
+                  <Link href="/restaurant/edit" className={getLinkClassName('/restaurant/edit')}>
+                    Edit
+                  </Link>
+                </>
+              )}
+
+              {/* Admin-specific links */}
+              {userType === 'admin' && (
+                <>
+                  <Link href="/admin/dashboard" className={getLinkClassName('/admin/dashboard')}>
+                    Dashboard
+                  </Link>
+                  <Link href="/admin/orders" className={getLinkClassName('/admin/orders')}>
+                    Orders
+                  </Link>
+                </>
+              )}
+
+              <Link href="/profile" className={getLinkClassName('/profile')}>
+                Profile
+              </Link>
+
+              <button onClick={handleLogout} className="hover:text-gray-400 transition-colors duration-200">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="hidden lg:flex lg:space-x-6">
+              <Link href="/signup" className="hover:text-gray-400 transition-colors duration-200">
+                Signup
+              </Link>
+              <Link href="/login" className="hover:text-gray-400 transition-colors duration-200">
+                Login
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
     </>
   );
 };
-
-const NavItem: React.FC<{
-  href: string;
-  icon: React.ReactNode;
-  label?: string;
-  getLinkClassName: (path: string) => string;
-  onClick?: () => void;
-}> = ({ href, icon, label, getLinkClassName, onClick }) => (
-  <li className="flex items-center justify-center w-16 h-16">
-    <Link href={href} onClick={onClick} className={`flex flex-col items-center justify-center w-full h-full ${getLinkClassName(href)}`} aria-label={label}>
-      {icon}
-      {label && <span className="text-xs mt-1">{label}</span>}
-    </Link>
-  </li>
-);
-
-const NotificationItem: React.FC<{
-  href: string;
-  icon: React.ReactNode;
-  notifications: Notification[];
-  isDropdownOpen: boolean;
-  onClick: () => void;
-  label?: string;
-}> = ({ href, icon, notifications, isDropdownOpen, onClick, label }) => (
-  <li className="relative flex items-center justify-center w-16 h-16">
-    <button onClick={onClick} className="flex flex-col items-center justify-center w-full h-full">
-      {icon}
-      {label && <span className="text-xs mt-1">{label}</span>}
-    </button>
-    {notifications.length > 0 && isDropdownOpen && (
-      <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-md z-20">
-        {notifications.map(notification => (
-          <a key={notification.id} href={href} className="block px-4 py-2 hover:bg-gray-100">
-            {notification.message}
-          </a>
-        ))}
-      </div>
-    )}
-  </li>
-);
-
-const NavLink: React.FC<{ href: string; label: string; getLinkClassName: (path: string) => string }> = ({ href, label, getLinkClassName }) => (
-  <Link href={href} className={`flex items-center px-4 py-2 rounded-md ${getLinkClassName(href)}`}>
-    {label}
-  </Link>
-);
 
 export default Navbar;

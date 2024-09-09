@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';  // Import js-cookie for cookie management
 
 const RestaurantLogin: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -26,9 +25,8 @@ const RestaurantLogin: React.FC = () => {
       if (response.status === 200) {
 
         const { token, restaurant } = response.data;
-
-        Cookies.set('token', token, { expires: 7 });  
-        Cookies.set('byteRestaurant', JSON.stringify(restaurant), { expires: 7 });
+        localStorage.setItem('token', token)
+        localStorage.setItem('byteUser', JSON.stringify(restaurant))
 
         router.push('/restaurant/dashboard');
       }
