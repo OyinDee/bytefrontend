@@ -6,6 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  userType: 'user' | 'restaurant' | null;
+  userData: any | null;
   setIsAuthenticated: (status: boolean) => void;
 }
 
@@ -13,6 +15,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [userType, setUserType] = useState<'user' | 'restaurant' | null>(null);
+  const [userData, setUserData] = useState<any | null>(null); // Holds the user or restaurant data
   const router = useRouter();
 
   useEffect(() => {
@@ -25,28 +29,44 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       try {
         const decodedToken = jwtDecode<any>(token);
 
+        // Check token expiration
         if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
+          setUserType(null);
+          setUserData(null);
           if (!isAuthRoute) router.push('/login');
         } else {
           setIsAuthenticated(true);
+          
+          // Distinguish between user and restaurant
+          if (decodedToken.user) {
+            setUserType('user');
+            setUserData(decodedToken.user);
+          } else if (decodedToken.restaurant) {
+            setUserType('restaurant');
+            setUserData(decodedToken.restaurant);
+          }
+          
           localStorage.setItem('byteUser', JSON.stringify(decodedToken));
-
         }
       } catch (error) {
         localStorage.removeItem('token');
         setIsAuthenticated(false);
+        setUserType(null);
+        setUserData(null);
         if (!isAuthRoute) router.push('/login');
       }
     } else {
       setIsAuthenticated(false);
+      setUserType(null);
+      setUserData(null);
       if (!isAuthRoute) router.push('/login');
     }
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider value={{ isAuthenticated, userType, userData, setIsAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

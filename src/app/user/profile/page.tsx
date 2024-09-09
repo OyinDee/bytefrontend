@@ -37,7 +37,7 @@ const Profile: React.FC = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-            const response = await axios.get('https://mongobyte.onrender.com/api/v1/users/getProfile', {
+            const response = await axios.get('http://localhost:8080/api/v1/users/getProfile', {
             headers: {
               'Authorization': `Bearer ${JSON.parse(token)}`,
             },
