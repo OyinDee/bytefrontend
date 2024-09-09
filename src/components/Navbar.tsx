@@ -53,117 +53,106 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* Mobile Navbar */}
-      <nav className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden" style={{ height: '60px' }}>
-        <div className="flex items-center justify-between p-2">
-          <div className="flex flex-1 justify-around">
-            <ul className="flex items-center w-full justify-around">
-              {isAuthenticated ? (
-                userType === 'user' ? (
-                  <>
-                    <NavItem href="/user" icon={<HomeIcon />} label="Home" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/offers" icon={<ShoppingBagIcon />} label="Offers" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/fund" icon={<PlusCircleIcon />} label="Fund" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/cart" icon={<ShoppingCartIcon />} label="Cart" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/profile" icon={<UserIcon />} label="Profile" getLinkClassName={getLinkClassName} />
-                    <NotificationItem
-                      href="/user/notifications"
-                      icon={<BellIcon />}
-                      notifications={userNotifications}
-                      isDropdownOpen={isDropdownOpen}
-                      onClick={handleNotificationClick}
-                    />
-                    <LogoutButton onClick={handleLogout} />
-                  </>
-                ) : (
-                  <>
-                    <NavItem href="/restaurant/dashboard" icon={<HomeIcon />} label="Dashboard" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/restaurant/orders" icon={<ShoppingBagIcon />} label="Orders" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/restaurant/menu" icon={<PlusCircleIcon />} label="Menu" getLinkClassName={getLinkClassName} />
-                    <NotificationItem
-                      href="/restaurant/notifications"
-                      icon={<BellIcon />}
-                      notifications={restaurantNotifications}
-                      isDropdownOpen={isDropdownOpen}
-                      onClick={handleNotificationClick}
-                    />
-                    <LogoutButton onClick={handleLogout} />
-                  </>
-                )
-              ) : (
-                <>
-                  <NavItem href="/signup" icon={<PlusCircleIcon />} label="Signup" getLinkClassName={getLinkClassName} />
-                  <NavItem href="/login" icon={<ArrowRightOnRectangleIcon />} label="Login" getLinkClassName={getLinkClassName} />
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-      {/* Navbar for large screens */}
-      <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6">
-        <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
-          <Link href="/" className="text-2xl font-bold text-white">
-            Wispa
-          </Link>
-          <div className="hidden lg:flex lg:space-x-6">
+    {/* Mobile Navbar */}
+    <nav className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden" style={{ height: '60px' }}>
+      <div className="flex items-center justify-between p-2">
+        <div className="flex flex-1 justify-around">
+          <ul className="flex items-center w-full justify-around">
             {isAuthenticated ? (
               userType === 'user' ? (
                 <>
-                  <NavLink href="/user" label="Home" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/offers" label="Offers" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/fund" label="Fund" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/cart" label="Cart" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/user/profile" label="Profile" getLinkClassName={getLinkClassName} />
-                  <NotificationButton
+                  <NavItem href="/user" icon={<HomeIcon />} label="Home" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/user/offers" icon={<ShoppingBagIcon />} label="Offers" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/user/fund" icon={<PlusCircleIcon />} label="Fund" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/user/cart" icon={<ShoppingCartIcon />} label="Cart" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/user/profile" icon={<UserIcon />} label="Profile" getLinkClassName={getLinkClassName} />
+                  <NotificationItem
                     href="/user/notifications"
                     icon={<BellIcon />}
                     notifications={userNotifications}
                     isDropdownOpen={isDropdownOpen}
                     onClick={handleNotificationClick}
                   />
+                  <LogoutButton onClick={handleLogout} />
                 </>
               ) : (
                 <>
-                  <NavLink href="/restaurant/dashboard" label="Dashboard" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/restaurant/orders" label="Orders" getLinkClassName={getLinkClassName} />
-                  <NavLink href="/restaurant/menu" label="Menu" getLinkClassName={getLinkClassName} />
-                  <NotificationButton
+                  <NavItem href="/restaurant/dashboard" icon={<HomeIcon />} label="Dashboard" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/restaurant/orders" icon={<ShoppingBagIcon />} label="Orders" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/restaurant/menu" icon={<PlusCircleIcon />} label="Menu" getLinkClassName={getLinkClassName} />
+                  <NotificationItem
                     href="/restaurant/notifications"
                     icon={<BellIcon />}
                     notifications={restaurantNotifications}
                     isDropdownOpen={isDropdownOpen}
                     onClick={handleNotificationClick}
                   />
+                  <LogoutButton onClick={handleLogout} />
                 </>
               )
             ) : (
               <>
-                <NavLink href="/signup" label="Signup" getLinkClassName={getLinkClassName} />
-                <NavLink href="/login" label="Login" getLinkClassName={getLinkClassName} />
+                {/* Mobile version of Signup and Login */}
+                <NavItem href="/signup" icon={<PlusCircleIcon />} label="Signup" getLinkClassName={getLinkClassName} />
+                <NavItem href="/login" icon={<ArrowRightOnRectangleIcon />} label="Login" getLinkClassName={getLinkClassName} />
               </>
             )}
-          </div>
-          <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
-              <button onClick={handleLogout} className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
-                Logout
-              </button>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    {/* Navbar for large screens */}
+    <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6">
+      <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
+        <Link href="/" className="text-2xl font-bold text-white">
+          Byte {/* Updated app name */}
+        </Link>
+        <div className="hidden lg:flex lg:space-x-6">
+          {isAuthenticated ? (
+            userType === 'user' ? (
+              <>
+                <NavLink href="/user" label="Home" getLinkClassName={getLinkClassName} />
+                <NavLink href="/user/offers" label="Offers" getLinkClassName={getLinkClassName} />
+                <NavLink href="/user/fund" label="Fund" getLinkClassName={getLinkClassName} />
+                <NavLink href="/user/cart" label="Cart" getLinkClassName={getLinkClassName} />
+                <NavLink href="/user/profile" label="Profile" getLinkClassName={getLinkClassName} />
+                <NotificationButton
+                  href="/user/notifications"
+                  icon={<BellIcon />}
+                  notifications={userNotifications}
+                  isDropdownOpen={isDropdownOpen}
+                  onClick={handleNotificationClick}
+                />
+              </>
             ) : (
               <>
-                <Link href="/signup" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
-                  Signup
-                </Link>
-                <Link href="/login" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
-                  Login
-                </Link>
+                <NavLink href="/restaurant/dashboard" label="Dashboard" getLinkClassName={getLinkClassName} />
+                <NavLink href="/restaurant/orders" label="Orders" getLinkClassName={getLinkClassName} />
+                <NavLink href="/restaurant/menu" label="Menu" getLinkClassName={getLinkClassName} />
+                <NotificationButton
+                  href="/restaurant/notifications"
+                  icon={<BellIcon />}
+                  notifications={restaurantNotifications}
+                  isDropdownOpen={isDropdownOpen}
+                  onClick={handleNotificationClick}
+                />
               </>
-            )}
-          </div>
+            )
+          ) : (
+        <>
+        <Link href="/signup" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
+          Signup
+        </Link>
+        <Link href="/login" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
+          Login
+        </Link>
+        </>
+          )}
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
+  </>
   );
 };
 
