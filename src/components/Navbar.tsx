@@ -49,10 +49,12 @@ const Navbar: React.FC = () => {
   const handleNotificationClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
   const notifications = [
     { id: '1', message: 'Someone gave you bytes!' },
     { id: '2', message: 'Message from support' },
   ];
+
   return (
     <>
       {/* Mobile Navbar */}
@@ -63,14 +65,14 @@ const Navbar: React.FC = () => {
               {isAuthenticated ? (
                 userType === 'user' ? (
                   <>
-                    <NavItem href="/user" icon={<HomeIcon />} label="" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/offers" icon={<ShoppingBagIcon />} label="" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/fund" icon={<PlusCircleIcon />} label="" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/cart" icon={<ShoppingCartIcon />} label="" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/user/profile" icon={<UserIcon />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/user" icon={<HomeIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/user/offers" icon={<ShoppingBagIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/user/fund" icon={<PlusCircleIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/user/cart" icon={<ShoppingCartIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/user/profile" icon={<UserIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
                     <NotificationItem
                       href="/user/notifications"
-                      icon={<BellIcon />}
+                      icon={<BellIcon className="w-6 h-6" />}
                       notifications={userNotifications}
                       isDropdownOpen={isDropdownOpen}
                       onClick={handleNotificationClick}
@@ -78,7 +80,7 @@ const Navbar: React.FC = () => {
                     />
                     <NavItem
                       href="#"
-                      icon={<ArrowRightOnRectangleIcon />}
+                      icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
                       label=""
                       getLinkClassName={getLinkClassName}
                       onClick={handleLogout}
@@ -86,12 +88,12 @@ const Navbar: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <NavItem href="/restaurant/dashboard" icon={<HomeIcon />} label="" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/restaurant/orders" icon={<ShoppingBagIcon />} label="" getLinkClassName={getLinkClassName} />
-                    <NavItem href="/restaurant/menu" icon={<PlusCircleIcon />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/restaurant/dashboard" icon={<HomeIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/restaurant/orders" icon={<ShoppingBagIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                    <NavItem href="/restaurant/menu" icon={<PlusCircleIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
                     <NotificationItem
                       href="/restaurant/notifications"
-                      icon={<BellIcon />}
+                      icon={<BellIcon className="w-6 h-6" />}
                       notifications={restaurantNotifications}
                       isDropdownOpen={isDropdownOpen}
                       onClick={handleNotificationClick}
@@ -99,7 +101,7 @@ const Navbar: React.FC = () => {
                     />
                     <NavItem
                       href="#"
-                      icon={<ArrowRightOnRectangleIcon />}
+                      icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
                       label=""
                       getLinkClassName={getLinkClassName}
                       onClick={handleLogout}
@@ -108,8 +110,8 @@ const Navbar: React.FC = () => {
                 )
               ) : (
                 <>
-                  <NavItem href="/signup" icon={<PlusCircleIcon />} label="" getLinkClassName={getLinkClassName} />
-                  <NavItem href="/login" icon={<ArrowRightOnRectangleIcon />} label="" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/signup" icon={<PlusCircleIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
+                  <NavItem href="/login" icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />} label="" getLinkClassName={getLinkClassName} />
                 </>
               )}
             </ul>
@@ -120,8 +122,8 @@ const Navbar: React.FC = () => {
       {/* Navbar for large screens */}
       <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6">
         <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
-          <Link href="/" className="text-2xl font-bold text-white">
-            Byte {/* Updated app name */}
+          <Link href="/restaurant/login" className="text-2xl font-bold text-white">
+            Byte
           </Link>
           <div className="hidden lg:flex lg:space-x-6 lg:ml-auto lg:mr-4">
             {isAuthenticated ? (
@@ -134,7 +136,7 @@ const Navbar: React.FC = () => {
                   <NavLink href="/user/profile" label="Profile" getLinkClassName={getLinkClassName} />
                   <NotificationButton
                     href="/user/notifications"
-                    icon={<BellIcon />}
+                    icon={<BellIcon className="w-6 h-6" />}
                     notifications={userNotifications}
                     isDropdownOpen={isDropdownOpen}
                     onClick={handleNotificationClick}
@@ -142,7 +144,7 @@ const Navbar: React.FC = () => {
                   />
                   <NavItem
                     href="#"
-                    icon={<ArrowRightOnRectangleIcon />}
+                    icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
                     label=""
                     getLinkClassName={getLinkClassName}
                     onClick={handleLogout}
@@ -155,7 +157,7 @@ const Navbar: React.FC = () => {
                   <NavLink href="/restaurant/menu" label="Menu" getLinkClassName={getLinkClassName} />
                   <NotificationButton
                     href="/restaurant/notifications"
-                    icon={<BellIcon />}
+                    icon={<BellIcon className="w-6 h-6" />}
                     notifications={restaurantNotifications}
                     isDropdownOpen={isDropdownOpen}
                     onClick={handleNotificationClick}
@@ -163,7 +165,7 @@ const Navbar: React.FC = () => {
                   />
                   <NavItem
                     href="#"
-                    icon={<ArrowRightOnRectangleIcon />}
+                    icon={<ArrowRightOnRectangleIcon className="w-6 h-6" />}
                     label=""
                     getLinkClassName={getLinkClassName}
                     onClick={handleLogout}
@@ -195,9 +197,9 @@ const NavItem: React.FC<{
   onClick?: () => void;
 }> = ({ href, icon, label, getLinkClassName, onClick }) => (
   <li className="flex flex-col items-center w-full max-w-[90px]">
-    <Link href={href} onClick={onClick} className={`${getLinkClassName(href)} flex flex-col items-center`}>
-      <div className="w-6 h-6">{icon}</div>
-      {label && <span className="text-xs">{label}</span>}
+    <Link href={href} onClick={onClick} className={`${getLinkClassName(href)} flex flex-col items-center`} aria-label={label}>
+      {icon}
+      {label && <span className="text-xs mt-1">{label}</span>}
     </Link>
   </li>
 );
@@ -210,36 +212,25 @@ const NotificationItem: React.FC<{
   onClick: () => void;
   label?: string;
 }> = ({ href, icon, notifications, isDropdownOpen, onClick, label }) => (
-  <li className="flex flex-col items-center relative">
-    <button onClick={onClick} className="flex flex-col items-center">
-      <div className="w-6 h-6">{icon}</div>
-      {notifications.length > 0 && (
-        <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-          {notifications.length}
-        </span>
-      )}
-      {label && <span className="text-xs">{label}</span>}
-    </button>
+  <li className="relative flex flex-col items-center">
+    <Link href={href} onClick={onClick} className="flex flex-col items-center" aria-label={label}>
+      {icon}
+      {notifications.length > 0 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1">{notifications.length}</div>}
+    </Link>
     {isDropdownOpen && (
-      <div className="absolute top-8 w-40 bg-white text-black p-2 rounded shadow-lg z-50">
-        <ul>
-          {notifications.map((notification) => (
-            <li key={notification.id} className="text-sm">
-              {notification.message}
-            </li>
-          ))}
-        </ul>
+      <div className="absolute mt-2 w-48 bg-white text-black shadow-lg rounded-md z-50">
+        {notifications.map((notification) => (
+          <div key={notification.id} className="p-2 border-b last:border-b-0">
+            {notification.message}
+          </div>
+        ))}
       </div>
     )}
   </li>
 );
 
-const NavLink: React.FC<{
-  href: string;
-  label: string;
-  getLinkClassName: (path: string) => string;
-}> = ({ href, label, getLinkClassName }) => (
-  <Link href={href} className={`${getLinkClassName(href)} text-lg font-semibold`}>
+const NavLink: React.FC<{ href: string; label: string; getLinkClassName: (path: string) => string }> = ({ href, label, getLinkClassName }) => (
+  <Link href={href} className={`${getLinkClassName(href)} text-lg font-semibold`} aria-label={label}>
     {label}
   </Link>
 );
@@ -252,25 +243,18 @@ const NotificationButton: React.FC<{
   onClick: () => void;
   label?: string;
 }> = ({ href, icon, notifications, isDropdownOpen, onClick, label }) => (
-  <div className="relative">
-    <button onClick={onClick} className="relative flex items-center">
+  <div className="relative flex flex-col items-center">
+    <Link href={href} onClick={onClick} className="flex flex-col items-center" aria-label={label}>
       {icon}
-      {notifications.length > 0 && (
-        <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-          {notifications.length}
-        </span>
-      )}
-      {label && <span className="ml-2">{label}</span>}
-    </button>
+      {notifications.length > 0 && <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1">{notifications.length}</div>}
+    </Link>
     {isDropdownOpen && (
-      <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg z-50">
-        <ul>
-          {notifications.map((notification) => (
-            <li key={notification.id} className="px-4 py-2 text-sm">
-              {notification.message}
-            </li>
-          ))}
-        </ul>
+      <div className="absolute mt-2 w-48 bg-white text-black shadow-lg rounded-md z-50">
+        {notifications.map((notification) => (
+          <div key={notification.id} className="p-2 border-b last:border-b-0">
+            {notification.message}
+          </div>
+        ))}
       </div>
     )}
   </div>
