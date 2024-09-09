@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useContext } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
@@ -8,11 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from './AuthCheck'; 
 import axios, { AxiosError } from 'axios';
+import Cookies from 'js-cookie';  // Add this for cookie handling
 
 const Login: React.FC = () => {
   const authContext = useContext(AuthContext);
-
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,14 +19,12 @@ const Login: React.FC = () => {
   // Form validation function
   const validateForm = () => {
     const newErrors: string[] = [];
-
     if (!username.trim()) {
       newErrors.push("Username is required.");
     }
     if (!password.trim()) {
       newErrors.push("Password is required.");
     }
-
     return newErrors;
   };
 
@@ -54,12 +49,22 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         router.push('/signupsuccess');
       } else if (response.status === 202) {
+        const token = response.data.token;
         
+        Cookies.set('token', token, {
+          secure: process.env.NODE_ENV === 'production',  // Only set the cookie securely in production
+          sameSite: 'Lax',  
+          expires: 2 
+        });
 
-        localStorage.setItem('token', JSON.stringify(response.data.token));
-        const decodedToken = jwtDecode<any>(response.data.token);
-        
-        localStorage.setItem('byteUser', JSON.stringify(decodedToken));
+        const decodedToken = jwtDecode<any>(token);
+
+        Cookies.set('byteUser', JSON.stringify(decodedToken), {
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'Lax',
+          expires: 2
+        });
+
         if (authContext) {
           authContext.setIsAuthenticated(true); 
         }
@@ -67,7 +72,6 @@ const Login: React.FC = () => {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-
         const { response } = error;
         if (response) {
           const { data } = response;
@@ -79,7 +83,6 @@ const Login: React.FC = () => {
         // General error handling
         setErrors([error.message || "An error occurred. Please try again."]);
       } else {
-
         setErrors(["An unexpected error occurred."]);
       }
     } finally {

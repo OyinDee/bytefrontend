@@ -2,51 +2,59 @@
 
 import { createContext, useState, useEffect, ReactNode, FC } from 'react';
 import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode'; 
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  userType: 'user' | 'restaurant' | null;
   setIsAuthenticated: (status: boolean) => void;
+  setUserType: (type: 'user' | 'restaurant' | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [userType, setUserType] = useState<'user' | 'restaurant' | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const currentPath = window.location.pathname;
 
-    const isAuthRoute = currentPath === '/login' || currentPath === '/signup' || currentPath === '/forgot-password' || currentPath === '/';
+    const isAuthRoute = currentPath === '/login' || currentPath === '/signup' || currentPath === '/forgot-password' || currentPath === '/' || currentPath === '/restaurant/login';
 
     if (token) {
       try {
         const decodedToken = jwtDecode<any>(token);
 
         if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
-          localStorage.removeItem('token');
+          Cookies.remove('token');
           setIsAuthenticated(false);
+          setUserType(null);
           if (!isAuthRoute) router.push('/login');
         } else {
           setIsAuthenticated(true);
-          localStorage.setItem('byteUser', JSON.stringify(decodedToken));
-
+          setUserType(decodedToken.userType || null);
+          Cookies.set('byteUser', JSON.stringify(decodedToken), { expires: 7 });
+          // router.push('/user/') 
         }
       } catch (error) {
-        localStorage.removeItem('token');
+        Cookies.remove('token');
         setIsAuthenticated(false);
+        setUserType(null);
         if (!isAuthRoute) router.push('/login');
       }
     } else {
       setIsAuthenticated(false);
+      setUserType(null);
       if (!isAuthRoute) router.push('/login');
     }
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider value={{ isAuthenticated, userType, setIsAuthenticated, setUserType }}>
       {children}
     </AuthContext.Provider>
   );

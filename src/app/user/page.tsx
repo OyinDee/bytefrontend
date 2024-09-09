@@ -105,7 +105,7 @@ const CombinedPage: React.FC = () => {
 
   return (
     <div>
-      <main className="p-4 lg:p-8 bg-white text-black pt-20 pb-20 min-h-screen">
+      <main className="p-4 lg:p-8 bg-white text-black pt-20 pb-20 min-h-screen lg:pt-20">
         {/* Search Bar */}
         <section className="mb-6">
           <div className="flex justify-center items-center space-x-4">
