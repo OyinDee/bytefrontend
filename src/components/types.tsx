@@ -28,3 +28,9 @@ export type Restaurant = {
   meals: Meal[];
   rating: number;
 };
+
+
+export interface Notification {
+  id: string;
+  message: string;
+}
