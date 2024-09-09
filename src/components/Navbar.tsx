@@ -164,11 +164,12 @@ const NavItem: React.FC<{
 }> = ({ href, icon, label, getLinkClassName }) => (
   <li className="flex flex-col items-center">
     <Link href={href} className={`flex flex-col items-center ${getLinkClassName(href)}`}>
-      {icon}
+      <div className="w-6 h-6">{icon}</div> {/* Added consistent size */}
       <span className="text-xs">{label}</span>
     </Link>
   </li>
 );
+
 
 const NotificationItem: React.FC<{
   href: string;
@@ -178,10 +179,12 @@ const NotificationItem: React.FC<{
   onClick: () => void;
 }> = ({ href, icon, notifications, isDropdownOpen, onClick }) => (
   <li className="flex flex-col items-center relative">
-    <button onClick={onClick} className={`flex flex-col items-center`}>
-      {icon}
+    <button onClick={onClick} className="flex flex-col items-center">
+      <div className="w-6 h-6">{icon}</div> {/* Consistent size */}
       {notifications.length > 0 && (
-        <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">{notifications.length}</span>
+        <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+          {notifications.length}
+        </span>
       )}
       <span className="text-xs">Notifications</span>
     </button>
@@ -197,6 +200,7 @@ const NotificationItem: React.FC<{
   </li>
 );
 
+
 const NotificationButton: React.FC<{
   href: string;
   icon: React.ReactNode;
@@ -209,7 +213,7 @@ const NotificationButton: React.FC<{
   return (
     <div className="relative">
       <button onClick={onClick} className="flex flex-col items-center">
-        {icon}
+        <div className="w-6 h-6">{icon}</div> {/* Consistent size */}
         {notifications.length > 0 && (
           <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">{notifications.length}</span>
         )}
@@ -226,6 +230,7 @@ const NotificationButton: React.FC<{
     </div>
   );
 };
+
 
 const LogoutButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button onClick={onClick} className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
