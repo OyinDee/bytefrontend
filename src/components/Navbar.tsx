@@ -38,10 +38,16 @@ const Navbar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('byteUser');
-    setIsAuthenticated(false);
-    router.push('/login');
+    const logout = confirm("Sure you want to logout?")
+    if(logout){
+      localStorage.removeItem('token');
+      localStorage.removeItem('byteUser');
+      setIsAuthenticated(false);
+      router.push('/login');
+    }
+    else{
+      alert("Thanks, I guess...")
+    }
   };
 
   useEffect(() => {
@@ -77,7 +83,7 @@ const Navbar: React.FC = () => {
       {/* Mobile Navbar */}
       <nav className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden" style={{ height: '60px' }}>
         <div className="flex items-center justify-between p-2">
-          <div className="flex flex-1 justify-around">
+          <div className="flex flex-1 justify-around mt-2">
             <ul className="flex items-center w-full justify-around">
               {isAuthenticated ? (
                 <>
@@ -167,7 +173,7 @@ const Navbar: React.FC = () => {
                   <li className="flex flex-col items-center">
                     <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
                       <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Logout</span>
+
                     </button>
                   </li>
                 </>
@@ -195,7 +201,7 @@ const Navbar: React.FC = () => {
       {/* Navbar for large screens */}
       <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6 lg:mb-0">
         <div className="container mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold">
+          <Link href="/restaurant/login" className="text-2xl font-bold">
             Byte!
           </Link>
           {isAuthenticated ? (

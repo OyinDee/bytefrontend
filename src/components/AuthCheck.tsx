@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  userType: 'user' | 'restaurant' | null;
+  userType: 'user'| 'admin' | 'restaurant' | null;
   userData: any | null;
   setIsAuthenticated: (status: boolean) => void;
 }
@@ -15,7 +15,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [userType, setUserType] = useState<'user' | 'restaurant' | null>(null);
+  const [userType, setUserType] = useState<'user'| 'admin' | 'restaurant' | null>(null);
   const [userData, setUserData] = useState<any | null>(null); // Holds the user or restaurant data
   const router = useRouter();
 
@@ -39,10 +39,17 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         } else {
           setIsAuthenticated(true);
           
-          // Distinguish between user and restaurant
+          
           if (decodedToken.user) {
-            setUserType('user');
+          if (decodedToken.user.superAdmin) {
+
+            setUserType('admin');
             setUserData(decodedToken.user);
+
+          }
+          else{
+              setUserType('user');
+            setUserData(decodedToken.user);}
           } else if (decodedToken.restaurant) {
             setUserType('restaurant');
             setUserData(decodedToken.restaurant);
