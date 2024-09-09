@@ -39,7 +39,7 @@ const RestaurantDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen bg-white p-6 py-20">
       {/* Restaurant Info */}
       <div className="mb-10">
         <h1 className="text-4xl font-bold text-black">Restaurant Name</h1>

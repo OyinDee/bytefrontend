@@ -1,9 +1,7 @@
-"use client";
-
 import { createContext, useState, useEffect, ReactNode, FC } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // Adjust import if necessary
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -23,7 +21,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const token = Cookies.get('token');
     const currentPath = window.location.pathname;
 
-    const isAuthRoute = currentPath === '/login' || currentPath === '/signup' || currentPath === '/forgot-password' || currentPath === '/' || currentPath === '/restaurant/login';
+    const isAuthRoute = ['/login', '/signup', '/forgot-password', '/', '/restaurant/login'].includes(currentPath);
 
     if (token) {
       try {
@@ -36,7 +34,15 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (!isAuthRoute) router.push('/login');
         } else {
           setIsAuthenticated(true);
-          setUserType(decodedToken.userType || null);
+
+          if (decodedToken.user) {
+            setUserType('user');
+          } else if (decodedToken.restaurant) {
+            setUserType('restaurant');
+          } else {
+            setUserType(null);
+          }
+
           Cookies.set('byteUser', JSON.stringify(decodedToken), { expires: 7 });
           // router.push('/user/') 
         }
