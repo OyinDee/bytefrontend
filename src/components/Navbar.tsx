@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import {
   HomeIcon,
   ArrowRightOnRectangleIcon,
@@ -9,6 +9,7 @@ import {
   PlusCircleIcon,
   ShoppingCartIcon,
   BellIcon,
+  EllipsisHorizontalIcon, // New "More" icon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -18,6 +19,7 @@ const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const authContext = useContext(AuthContext);
+  const [showMore, setShowMore] = useState(false); // State for toggling "More" dropdown
 
   if (!authContext) {
     throw new Error("Navbar must be used within an AuthProvider");
@@ -52,12 +54,6 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/user/offers" className={`flex flex-col items-center ${getLinkClassName('/user/offers')}`}>
-                      <ShoppingBagIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Offers</span>
-                    </Link>
-                  </li>
-                  <li>
                     <Link href="/user/fund" className={`flex flex-col items-center ${getLinkClassName('/user/fund')}`}>
                       <PlusCircleIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Fund</span>
@@ -70,22 +66,38 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/user/profile" className={`flex flex-col items-center ${getLinkClassName('/user/profile')}`}>
-                      <UserIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Profile</span>
-                    </Link>
-                  </li>
-                  <li>
                     <Link href="/user/notifications" className={`flex flex-col items-center ${getLinkClassName('/user/notifications')}`}>
                       <BellIcon className="h-5 w-5 mb-1" />
                       <span className="text-xs">Notifications</span>
                     </Link>
                   </li>
                   <li>
-                    <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
-                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Logout</span>
+                    <button onClick={() => setShowMore(!showMore)} className="flex flex-col items-center">
+                      <EllipsisHorizontalIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">More</span>
                     </button>
+                    {showMore && (
+                      <ul className="absolute bg-black text-white p-2 rounded-lg mt-1 space-y-2 shadow-md">
+                        <li>
+                          <Link href="/user/offers" className={`flex flex-col items-center ${getLinkClassName('/user/offers')}`}>
+                            <ShoppingBagIcon className="h-5 w-5 mb-1" />
+                            <span className="text-xs">Offers</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/user/profile" className={`flex flex-col items-center ${getLinkClassName('/user/profile')}`}>
+                            <UserIcon className="h-5 w-5 mb-1" />
+                            <span className="text-xs">Profile</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
+                            <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                            <span className="text-xs">Logout</span>
+                          </button>
+                        </li>
+                      </ul>
+                    )}
                   </li>
                 </>
               ) : (
@@ -97,9 +109,9 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/restaurant/orders" className={`flex flex-col items-center ${getLinkClassName('/restaurant/orders')}`}>
-                      <ShoppingBagIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Orders</span>
+                    <Link href="/restaurant/notifications" className={`flex flex-col items-center ${getLinkClassName('/restaurant/notifications')}`}>
+                      <BellIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Notifications</span>
                     </Link>
                   </li>
                   <li>
@@ -109,16 +121,26 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/restaurant/notifications" className={`flex flex-col items-center ${getLinkClassName('/restaurant/notifications')}`}>
-                      <BellIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Notifications</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
-                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Logout</span>
+                    <button onClick={() => setShowMore(!showMore)} className="flex flex-col items-center">
+                      <EllipsisHorizontalIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">More</span>
                     </button>
+                    {showMore && (
+                      <ul className="absolute bg-black text-white p-2 rounded-lg mt-1 space-y-2 shadow-md">
+                        <li>
+                          <Link href="/restaurant/orders" className={`flex flex-col items-center ${getLinkClassName('/restaurant/orders')}`}>
+                            <ShoppingBagIcon className="h-5 w-5 mb-1" />
+                            <span className="text-xs">Orders</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
+                            <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                            <span className="text-xs">Logout</span>
+                          </button>
+                        </li>
+                      </ul>
+                    )}
                   </li>
                 </>
               )
@@ -170,14 +192,23 @@ const Navbar: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center space-x-4">
-            {!isAuthenticated ? (
-              <>
-                <Link href="/signup" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">Signup</Link>
-                <Link href="/login" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">Login</Link>
-              </>
+          <div>
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200"
+              >
+                Logout
+              </button>
             ) : (
-              <button onClick={handleLogout} className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">Logout</button>
+              <>
+                <Link href="/signup" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
+                  Signup
+                </Link>
+                <Link href="/login" className="ml-4 text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
+                  Login
+                </Link>
+              </>
             )}
           </div>
         </div>
