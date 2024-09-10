@@ -91,24 +91,6 @@ const RestaurantDashboard: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* Meal Management Section */}
-      <div className="mt-10">
-        <h2 className="text-3xl font-bold text-black mb-4">Manage Meals</h2>
-        <div className="space-y-4">
-          <MealCard name="Burger Combo" price={10.00} availability={true} />
-          <MealCard name="Pizza Slice" price={5.00} availability={false} />
-        </div>
-
-        <div className="mt-8">
-          <button className="bg-yellow-500 text-black px-4 py-2 rounded-md shadow-md hover:bg-yellow-600">
-            Add New Meal
-          </button>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md ml-4 hover:bg-red-600">
-            Remove Meal
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

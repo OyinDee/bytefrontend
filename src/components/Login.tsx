@@ -1,22 +1,20 @@
 import { useState, useContext } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
-import Loader from '@/components/Loader'; 
+import Loader from '@/components/Loader';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AuthContext } from './AuthCheck'; 
+import { AuthContext } from './AuthCheck';
 import axios, { AxiosError } from 'axios';
-import Cookies from 'js-cookie';  // Add this for cookie handling
 
 const Login: React.FC = () => {
   const authContext = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]); 
+  const [errors, setErrors] = useState<string[]>([]);
   const router = useRouter();
 
-  // Form validation function
   const validateForm = () => {
     const newErrors: string[] = [];
     if (!username.trim()) {
@@ -37,10 +35,9 @@ const Login: React.FC = () => {
     }
 
     setErrors([]);
-    setIsLoading(true); // Show loader
+    setIsLoading(true);
 
     try {
-      // Replace with your actual API endpoint
       const response = await axios.post('https://mongobyte.onrender.com/api/v1/auth/login', {
         username,
         password,
@@ -51,22 +48,13 @@ const Login: React.FC = () => {
       } else if (response.status === 202) {
         const token = response.data.token;
         
-        Cookies.set('token', token, {
-          secure: process.env.NODE_ENV === 'production',  // Only set the cookie securely in production
-          sameSite: 'Lax',  
-          expires: 2 
-        });
-
+        localStorage.setItem('token', token);
+        
         const decodedToken = jwtDecode<any>(token);
-
-        Cookies.set('byteUser', JSON.stringify(decodedToken), {
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'Lax',
-          expires: 2
-        });
+        localStorage.setItem('byteUser', JSON.stringify(decodedToken));
 
         if (authContext) {
-          authContext.setIsAuthenticated(true); 
+          authContext.setIsAuthenticated(true);
         }
         router.push('/user/');
       }
@@ -80,7 +68,6 @@ const Login: React.FC = () => {
           setErrors(["Network error. Please check your connection."]);
         }
       } else if (error instanceof Error) {
-        // General error handling
         setErrors([error.message || "An error occurred. Please try again."]);
       } else {
         setErrors(["An unexpected error occurred."]);
@@ -92,23 +79,20 @@ const Login: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-black">
-      {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/Images/burger.jpg" // Replace with your burger image path
+          src="/Images/burger.jpg"
           alt="Burger Background"
           fill
-          style={{ objectFit: 'cover' }} // New prop for styling
+          style={{ objectFit: 'cover' }}
           quality={100}
           className="z-0"
         />
-        <div className="absolute inset-0 bg-black opacity-50"></div> {/* Overlay */}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
 
-      {/* Loader */}
       {isLoading && <Loader />}
 
-      {/* Login Form */}
       <div className={`relative z-10 flex items-center justify-center min-h-screen ${isLoading ? 'hidden' : ''}`}>
         <form
           onSubmit={handleSubmit}
@@ -155,7 +139,6 @@ const Login: React.FC = () => {
             Byte IN!
           </button>
 
-          {/* Forgot Password Link */}
           <div className="mt-4 text-center">
             <Link href="/forgot-password">
               <span className="text-blue-400 hover:text-blue-600 font-semibold mt-2 inline-block">
@@ -164,7 +147,6 @@ const Login: React.FC = () => {
             </Link>
           </div>
 
-          {/* Sign Up Link */}
           <div className="mt-4 text-center">
             <p className="text-white">Don&apos;t have an account?</p>
             <Link href="/signup">
