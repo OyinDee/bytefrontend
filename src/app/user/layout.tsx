@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import '../globals.css';
+import '../globals.css'
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from "../../components/Navbar";

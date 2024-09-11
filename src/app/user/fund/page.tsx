@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter for redirection
+import { useRouter } from "next/navigation";
 
 const FundPage: React.FC = () => {
   const [amount, setAmount] = useState<number | ''>('');
@@ -9,39 +9,33 @@ const FundPage: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const [bytes, setBytes] = useState<number>(0); 
   const [loading, setLoading] = useState<boolean>(false);
-  const [tab, setTab] = useState<'fund' | 'transfer'>('fund'); // To switch between tabs
-  const [user, setUser] = useState<{ byteBalance: number } | null>(null);
+  const [tab, setTab] = useState<'fund' | 'transfer'>('fund');
+  const [user, setUser] = useState<any>(null);
 
-  const router = useRouter(); // Initialize router for redirection
-
+  const router = useRouter();
   const NAIRA_TO_BYTES_RATE = 0.1;
 
   useEffect(() => {
     const savedUser = localStorage.getItem('byteUser');
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
-      if (parsedUser && parsedUser.user) {
-        setUser(parsedUser.user); // Safely set user if it exists
-      } else {
-       console.log("Not found") // Redirect to login if no user is found
-      }
+      setUser(parsedUser);
     } else {
-      router.push('/login'); // Redirect to login if no user is found
+
     }
   }, [router]);
 
-  // Handles input change and fee calculation
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputAmount = parseFloat(e.target.value);
     if (isNaN(inputAmount) || inputAmount <= 0) {
       setAmount('');
       setFee(0);
       setTotal(0);
-      setBytes(0); // Reset bytes
+      setBytes(0);
     } else {
-      const calculatedFee = inputAmount * 0.03; // 3% fee
+      const calculatedFee = inputAmount * 0.03; 
       const calculatedTotal = inputAmount + calculatedFee;
-      const calculatedBytes = inputAmount * NAIRA_TO_BYTES_RATE; // Calculate bytes
+      const calculatedBytes = inputAmount * NAIRA_TO_BYTES_RATE;
       setAmount(inputAmount);
       setFee(calculatedFee);
       setTotal(calculatedTotal);
@@ -50,8 +44,7 @@ const FundPage: React.FC = () => {
   };
 
   const handleContinue = async () => {
-    const token = localStorage.getItem('token'); // Get the token from localStorage
-
+    const token = localStorage.getItem('token');
     if (!token) {
       alert('Authentication token not found. Please log in again.');
       return;
@@ -64,7 +57,7 @@ const FundPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${JSON.parse(token)}`, // Send the token in the header
+          'Authorization': `Bearer ${token}`, 
         },
         body: JSON.stringify({ amount: total }),
       });
@@ -74,7 +67,6 @@ const FundPage: React.FC = () => {
       if (response.ok) {
         window.location.href = data.url;
       } else {
-        // Handle errors
         alert(`Error: ${data.message || 'An error occurred'}`);
       }
     } catch (error) {
@@ -86,14 +78,16 @@ const FundPage: React.FC = () => {
   };
 
   if (!user) {
-    return <div>Loading...</div>; // Display a loading message or spinner while fetching user data
+    return <div>Loading...</div>;
   }
 
   return (
     <main className="min-h-screen bg-gray-100 text-black p-4 lg:p-8 py-20">
       <div className="bg-white shadow-md rounded-lg p-6 max-w-md mx-auto">
         <div className="text-center mb-6">
-          <p className="text-xl font-semibold text-gray-700">Byte Balance: <span className="text-yellow-600">B{Number(user.byteBalance)}</span></p>
+          <p className="text-xl font-semibold text-gray-700">
+            Byte Balance: <span className="text-yellow-600">B{user.byteBalance}</span>
+          </p>
         </div>
 
         <div className="flex mb-4">

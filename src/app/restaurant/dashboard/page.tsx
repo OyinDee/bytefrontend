@@ -1,21 +1,36 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image'
+import Image from 'next/image';
+import {jwtDecode} from 'jwt-decode';
 
-const getUserData = () => {
 
-  return JSON.parse(localStorage.getItem('byteUser') || '{}');
-};
+interface DecodedToken {
+  restaurant: {
+    name: string;
+    description: string;
+    location: string;
+    contactNumber: string;
+    email: string;
+    imageUrl: string;
+    totalIncome?: number;
+  };
+}
 
 const RestaurantDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Pending' | 'Confirmed' | 'Delivered'>('Pending');
   const [restaurant, setRestaurant] = useState<any>(null); // Update with the correct type
 
   useEffect(() => {
-
-    const userData = getUserData();
-    setRestaurant(userData);
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        setRestaurant(decodedToken.restaurant);
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    }
   }, []);
 
   const handleTabClick = (tab: 'Pending' | 'Confirmed' | 'Delivered') => {
@@ -29,18 +44,16 @@ const RestaurantDashboard: React.FC = () => {
 
       {restaurant && (
         <div className="bg-white p-6 rounded-lg shadow-md mb-10">
-          <div className="flex items-center mb-4">
-            <Image fill src={restaurant.imageUrl} alt={restaurant.name} className="w-24 h-24 rounded-full object-cover mr-4" />
+          <div className="flex items-center space-x-4 mb-4">
             <div>
               <h1 className="text-4xl font-bold text-black">{restaurant.name}</h1>
-              <p className="text-lg text-gray-700">{restaurant.description}</p>
+              <p className="text-lg text-gray-700 mt-2">{restaurant.description}</p>
               <p className="text-md text-gray-600 mt-2">Location: {restaurant.location}</p>
               <p className="text-md text-gray-600">Contact: {restaurant.contactNumber}</p>
               <p className="text-md text-gray-600">Email: {restaurant.email}</p>
             </div>
           </div>
           
-
           <div className="bg-yellow-50 p-4 rounded-lg shadow-md mb-8">
             <h2 className="text-2xl font-semibold text-black">Total Income</h2>
             <p className="text-xl text-gray-800 mt-2">
@@ -49,7 +62,6 @@ const RestaurantDashboard: React.FC = () => {
           </div>
         </div>
       )}
-
 
       <div className="mb-8">
         <div className="flex justify-around border-b border-gray-300 mb-4">
@@ -96,7 +108,6 @@ const RestaurantDashboard: React.FC = () => {
   );
 };
 
-
 const OrderCard: React.FC<{ orderId: string; note: string; totalPrice: number }> = ({ orderId, note, totalPrice }) => (
   <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
     <p className="text-lg font-bold text-black">Order ID: {orderId}</p>
@@ -104,7 +115,5 @@ const OrderCard: React.FC<{ orderId: string; note: string; totalPrice: number }>
     <p className="text-black font-semibold">Total: ₦{totalPrice.toFixed(2)}</p>
   </div>
 );
-
-
 
 export default RestaurantDashboard;

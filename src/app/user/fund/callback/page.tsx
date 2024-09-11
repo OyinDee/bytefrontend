@@ -1,17 +1,19 @@
-'use client'; // Make this a client-side component
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 
+import { useCallback } from 'react';
+
 const CallbackPage = () => {
   const [paymentStatus, setPaymentStatus] = useState<string>('Not Checked');
-  const [loading, setLoading] = useState<boolean>(true);  // Start in loading state
+  const [loading, setLoading] = useState<boolean>(true);
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
   const router = useRouter();
 
-  const verifyPayment = async () => {
+  const verifyPayment = useCallback(async () => {
     if (reference) {
       try {
         const response = await axios.get(
@@ -22,16 +24,16 @@ const CallbackPage = () => {
       } catch (error) {
         setPaymentStatus('Error');
       } finally {
-        setLoading(false);  // Stop loading once request is finished
+        setLoading(false);
       }
     }
-  };
+  }, [reference, router]);  
 
   useEffect(() => {
     if (reference) {
       verifyPayment();
     }
-  }, [reference]);
+  }, [reference, verifyPayment]);
 
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4 lg:p-8">

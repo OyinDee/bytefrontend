@@ -1,16 +1,12 @@
-"use client"
-import { Inter } from "next/font/google";
-import './globals.css';
-import AuthProvider from '@/components/AuthCheck';
-import RestaurantNavbar from '@/components/RestaurantNavbar';
-import UserNavbar from '@/components/UserNavbar';
-import PublicNavbar from '@/components/PublicNavbar';
-import { useRouter, usePathname } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
-import { useEffect } from 'react';
-import MetaTags from './MetaTags';
 
-const inter = Inter({ subsets: ["latin"] });
+"use client";
+
+import React, { useEffect } from 'react';
+import './globals.css';
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
+import MetaTags from './MetaTags'; 
+import { jwtDecode } from 'jwt-decode';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,34 +20,30 @@ export default function Layout({ children }: LayoutProps) {
     if (token) {
       try {
         const decodedToken = jwtDecode<any>(token);
-        if (decodedToken) {
-          localStorage.setItem('byteUser', JSON.stringify(decodedToken.user))
-          router.push('/user/');
+        if (decodedToken.user) {
+          localStorage.setItem('byteUser', JSON.stringify(decodedToken.user));
+        } else if (decodedToken.restaurant) {
+          router.push('/restaurant/dashboard');
+        } else {
+          localStorage.removeItem('token');
+          router.push('/login');
         }
       } catch (error) {
+        console.error('Invalid token', error);
+        localStorage.removeItem('token');
+        router.push('/login');
       }
     } else {
-
+      router.push('/login');
     }
   }, [router]);
-  const pathname = usePathname();
-
-  const renderNavbar = () => {
-    if (pathname.startsWith('/restaurant') && pathname !='/restaurant/login') {
-      return <RestaurantNavbar />;
-    } else if (pathname.startsWith('/user')) {
-      return <UserNavbar />;
-    } else {
-      return <PublicNavbar />;
-    }
-  };
 
   return (
-    <html>
-      <body className={inter.className}>
-          <MetaTags /> 
-          {renderNavbar()}
-          <main>{children}</main>
+    <html lang="en">
+      <MetaTags />
+      <body>
+        <Navbar />
+        <main>{children}</main>
       </body>
     </html>
   );
