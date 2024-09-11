@@ -3,11 +3,12 @@
 
 import React, { useEffect } from 'react';
 import './globals.css';
+import MetaTags from './MetaTags'
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import MetaTags from './MetaTags'; 
-import { jwtDecode } from 'jwt-decode';
 
+import { jwtDecode } from 'jwt-decode';
+import Head from 'next/head';
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -39,12 +40,12 @@ export default function Layout({ children }: LayoutProps) {
   }, [router]);
 
   return (
-    <html lang="en">
-      <MetaTags />
-      <body>
-        <Navbar />
-        <main>{children}</main>
-      </body>
-    </html>
+<>
+
+    <MetaTags />
+
+      <Navbar />
+      <main>{children}</main>
+</>
   );
 }
