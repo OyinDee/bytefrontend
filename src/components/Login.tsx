@@ -1,4 +1,5 @@
-import { useState, useContext } from 'react';
+"use client"
+import { useState, useContext, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
 import Loader from '@/components/Loader';
@@ -8,12 +9,31 @@ import { AuthContext } from './AuthCheck';
 import axios, { AxiosError } from 'axios';
 
 const Login: React.FC = () => {
-  const authContext = useContext(AuthContext);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<any>(token);
+        if (decodedToken.user) {
+          router.push('/user/');
+        }
+        if (decodedToken.restaurant) {
+          router.push('/restaurant/dashboard');
+        }
+      } catch (error) {
+        
+      }
+    }
+  }, [router]);
+
 
   const validateForm = () => {
     const newErrors: string[] = [];
@@ -47,15 +67,9 @@ const Login: React.FC = () => {
         router.push('/signupsuccess');
       } else if (response.status === 202) {
         const token = response.data.token;
-        
         localStorage.setItem('token', token);
-        
         const decodedToken = jwtDecode<any>(token);
-        localStorage.setItem('byteUser', JSON.stringify(decodedToken));
-
-        if (authContext) {
-          authContext.setIsAuthenticated(true);
-        }
+        localStorage.setItem('byteUser', JSON.stringify(decodedToken.user));
         router.push('/user/');
       }
     } catch (error) {

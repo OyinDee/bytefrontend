@@ -21,13 +21,13 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const currentPath = window.location.pathname;
-
+  
     const isAuthRoute = ['/login', '/signup', '/forgot-password', '/', '/restaurant/login'].includes(currentPath);
-
+  
     if (token) {
       try {
         const decodedToken = jwtDecode<any>(token);
-
+  
         if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
           localStorage.removeItem('token');
           localStorage.removeItem('byteUser');
@@ -36,14 +36,18 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (!isAuthRoute) router.push('/login');
         } else {
           setIsAuthenticated(true);
-
+  
           if (decodedToken.user) {
             setUserType('user');
           } else if (decodedToken.restaurant) {
             setUserType('restaurant');
           }
-
+  
           localStorage.setItem('byteUser', JSON.stringify(decodedToken));
+
+          if (isAuthRoute) {
+            router.push(userType === 'restaurant' ? '/restaurant/dashboard' : '/user/dashboard');
+          }
         }
       } catch (error) {
         localStorage.removeItem('token');
@@ -57,7 +61,8 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setUserType(null);
       if (!isAuthRoute) router.push('/login');
     }
-  }, [router]);
+  }, [router, userType]);
+  
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, userType, setIsAuthenticated, setUserType }}>

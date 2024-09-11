@@ -36,27 +36,28 @@ const Profile: React.FC = () => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (token) {
+
         try {
             const response = await axios.get('https://mongobyte.onrender.com/api/v1/users/getProfile', {
             headers: {
-              'Authorization': `Bearer ${JSON.parse(token)}`,
+              'Authorization': `Bearer ${token}`,
             },
           });
-          console.log(response.data)
-          const decodedToken = jwtDecode<any>(response.data.token);   
-          localStorage.setItem('token', JSON.stringify(response.data.token))
 
-          localStorage.setItem('byteUser', JSON.stringify(decodedToken))
+          const decodedToken = jwtDecode<any>(response.data.token);   
+          localStorage.setItem('token', response.data.token)
+
+          localStorage.setItem('byteUser', JSON.stringify(decodedToken.user))
           setUser(decodedToken.user);
           setBio(decodedToken.user.bio || '');
-          setLoading(false); // Stop loading once data is fetched
+          setLoading(false); 
         } catch (error) {
           console.error('Error fetching user data:', error);
           setError('Failed to load user data. Please try again later.');
-          setLoading(false); // Stop loading on error
+          setLoading(false);
         }
       } else {
-        setLoading(false); // Stop loading if no token is found
+        setLoading(false);
         setError('No user token found. Please log in.');
       }
     };
@@ -98,12 +99,12 @@ const Profile: React.FC = () => {
         { imageUrl, bio },
         {
           headers: {
-            'Authorization': `Bearer ${JSON.parse(token)}`,
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
       if (updateProfileResponse.data.token) {
-        localStorage.setItem('token', JSON.stringify(updateProfileResponse.data.token));
+        localStorage.setItem('token', updateProfileResponse.data.token);
         const decodedToken = jwtDecode<any>(updateProfileResponse.data.token);   
         localStorage.setItem('byteUser', JSON.stringify(decodedToken))
       }
@@ -126,7 +127,7 @@ const Profile: React.FC = () => {
           imageUrl
         }));
       }
-      setSelectedImage(null); // Clear selected image
+      setSelectedImage(null); 
     } catch (error) {
       console.error('Error uploading image:', error);
     } finally {
@@ -171,7 +172,7 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="relative min-h-screen pt-20 pb-20 bg-white text-black">
+    <div className="relative min-h-screen pt-5 pb-20 bg-white text-black">
       <div className="relative z-10 flex flex-col items-center justify-center p-4 lg:p-8">
         <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 border border-gray-200">
           <div className="flex flex-col items-center text-center relative">

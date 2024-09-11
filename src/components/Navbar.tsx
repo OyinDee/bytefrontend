@@ -1,16 +1,16 @@
 "use client";
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import {
   HomeIcon,
-  ArrowRightOnRectangleIcon,
-  ShoppingBagIcon,
-  UserIcon,
-  PlusCircleIcon,
   ShoppingCartIcon,
   BellIcon,
-  EllipsisHorizontalIcon, // New "More" icon
-} from '@heroicons/react/24/outline';
+  UserIcon,
+  ShoppingBagIcon,
+  PlusCircleIcon,
+  ArrowRightOnRectangleIcon,
+  EllipsisHorizontalIcon,
+} from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthContext } from './AuthCheck';
@@ -19,195 +19,218 @@ const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const authContext = useContext(AuthContext);
-  const [showMore, setShowMore] = useState(false); // State for toggling "More" dropdown
+  const [showPrimaryMenu, setShowPrimaryMenu] = useState(true);
+  const [userType, setUserType] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!authContext) {
-    throw new Error("Navbar must be used within an AuthProvider");
+  useEffect(() => {
+    if (authContext) {
+      const { isAuthenticated, userType } = authContext;
+      setUserType(userType);
+      setLoading(false);
+    }
+  }, [authContext]);
+
+  if (loading) {
+
   }
 
-  const { isAuthenticated, userType, setIsAuthenticated } = authContext;
+  if (!authContext) {
+    return null; 
+  }
+
+  const { isAuthenticated, setIsAuthenticated } = authContext;
 
   const getLinkClassName = (path: string) => {
-    return pathname === path ? 'text-yellow-400' : 'hover:text-gray-400 transition-colors duration-200';
+    return pathname === path ? 'text-yellow-400' : 'hover:text-yellow-400 transition-colors duration-200';
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('byteUser');
-    setIsAuthenticated(false);
-    router.push('/login');
+    const confirmLogout = confirm("Do you really want to log out?");
+    if (confirmLogout) {
+      alert("Aiit, calm... You have it!");
+      localStorage.removeItem('token');
+      localStorage.removeItem('byteUser');
+      setIsAuthenticated(false);
+      router.push('/login');
+    } else {
+      alert("Thanks, I guess...");
+    }
   };
 
   return (
     <>
-      {/* Mobile Navbar */}
-      <nav className="fixed bottom-0 left-0 w-full bg-black text-white z-50 shadow-lg lg:hidden" style={{ height: '60px' }}>
-        <div className="flex items-center justify-around p-2">
-          <ul className="flex items-center w-full justify-around">
-            {isAuthenticated ? (
-              userType === 'user' ? (
-                <>
+      <nav className="bg-black p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link href="/restaurant/login" className="text-white text-2xl font-bold">
+            Byte!
+          </Link>
+
+          {!isAuthenticated ? (
+            <div className="fixed bottom-0 inset-x-0 bg-black p-4 md:hidden flex justify-between items-center z-50">
+              <ul className="flex justify-between w-full px-10 text-white">
+                <li>
+                  <Link href="/signup" className={`flex flex-col items-center ${getLinkClassName('/signup')}`}>
+                    <PlusCircleIcon className="h-5 w-5 mb-1" />
+                    <span className="text-xs">Sign Up</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/login" className={`flex flex-col items-center ${getLinkClassName('/login')}`}>
+                    <UserIcon className="h-5 w-5 mb-1" />
+                    <span className="text-xs">Login</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <div className="fixed bottom-0 inset-x-0 bg-black p-4 md:hidden flex justify-between items-center z-50">
+              {userType === 'restaurant' ? (
+                <ul className="flex justify-between w-full text-white">
                   <li>
-                    <Link href="/user" className={`flex flex-col items-center ${getLinkClassName('/user')}`}>
-                      <HomeIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Home</span>
+                    <Link href="/restaurant/meals" className={`flex flex-col items-center ${getLinkClassName('/restaurant/meals')}`}>
+                      <ShoppingBagIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Meals</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/user/fund" className={`flex flex-col items-center ${getLinkClassName('/user/fund')}`}>
-                      <PlusCircleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Fund</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/user/cart" className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}>
+                    <Link href="/restaurant/orders" className={`flex flex-col items-center ${getLinkClassName('/restaurant/orders')}`}>
                       <ShoppingCartIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Cart</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/user/notifications" className={`flex flex-col items-center ${getLinkClassName('/user/notifications')}`}>
-                      <BellIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Notifications</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <button onClick={() => setShowMore(!showMore)} className="flex flex-col items-center">
-                      <EllipsisHorizontalIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">More</span>
-                    </button>
-                    {showMore && (
-                      <ul className="absolute bg-black text-white p-2 rounded-lg mt-1 space-y-2 shadow-md">
-                        <li>
-                          <Link href="/user/offers" className={`flex flex-col items-center ${getLinkClassName('/user/offers')}`}>
-                            <ShoppingBagIcon className="h-5 w-5 mb-1" />
-                            <span className="text-xs">Offers</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="/user/profile" className={`flex flex-col items-center ${getLinkClassName('/user/profile')}`}>
-                            <UserIcon className="h-5 w-5 mb-1" />
-                            <span className="text-xs">Profile</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
-                            <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                            <span className="text-xs">Logout</span>
-                          </button>
-                        </li>
-                      </ul>
-                    )}
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <Link href="/restaurant/dashboard" className={`flex flex-col items-center ${getLinkClassName('/restaurant/dashboard')}`}>
-                      <HomeIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Dashboard</span>
+                      <span className="text-xs">Orders</span>
                     </Link>
                   </li>
                   <li>
                     <Link href="/restaurant/notifications" className={`flex flex-col items-center ${getLinkClassName('/restaurant/notifications')}`}>
                       <BellIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Notifications</span>
+                      <span className="text-xs">Notifs</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/restaurant/menu" className={`flex flex-col items-center ${getLinkClassName('/restaurant/menu')}`}>
-                      <PlusCircleIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">Menu</span>
+                    <Link href="/restaurant/profile" className={`flex flex-col items-center ${getLinkClassName('/restaurant/profile')}`}>
+                      <UserIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Profile</span>
                     </Link>
                   </li>
                   <li>
-                    <button onClick={() => setShowMore(!showMore)} className="flex flex-col items-center">
-                      <EllipsisHorizontalIcon className="h-5 w-5 mb-1" />
-                      <span className="text-xs">More</span>
+                    <button onClick={handleLogout} className="flex flex-col items-center hover:text-yellow-400 transition-colors duration-200">
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Logout</span>
                     </button>
-                    {showMore && (
-                      <ul className="absolute bg-black text-white p-2 rounded-lg mt-1 space-y-2 shadow-md">
-                        <li>
-                          <Link href="/restaurant/orders" className={`flex flex-col items-center ${getLinkClassName('/restaurant/orders')}`}>
-                            <ShoppingBagIcon className="h-5 w-5 mb-1" />
-                            <span className="text-xs">Orders</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <button onClick={handleLogout} className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
-                            <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                            <span className="text-xs">Logout</span>
-                          </button>
-                        </li>
-                      </ul>
-                    )}
                   </li>
-                </>
-              )
-            ) : (
-              <>
-                <li>
-                  <Link href="/signup" className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
-                    <PlusCircleIcon className="h-5 w-5 mb-1" />
-                    <span className="text-xs">Signup</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/login" className="flex flex-col items-center hover:text-gray-400 transition-colors duration-200">
-                    <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
-                    <span className="text-xs">Login</span>
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
-      </nav>
+                </ul>
+              ) : (
+                <ul className="flex justify-between w-full text-white">
+                  {showPrimaryMenu ? (
+                    <>
+                      <li>
+                        <Link href="/user" className={`flex flex-col items-center ${getLinkClassName('/user')}`}>
+                          <HomeIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Home</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/user/cart" className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}>
+                          <ShoppingCartIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Cart</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/user/notifications" className={`flex flex-col items-center ${getLinkClassName('/user/notifications')}`}>
+                          <BellIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Notifs</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/user/profile" className={`flex flex-col items-center ${getLinkClassName('/user/profile')}`}>
+                          <UserIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Profile</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <button onClick={() => setShowPrimaryMenu(false)} className="flex flex-col items-center">
+                          <EllipsisHorizontalIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">More</span>
+                        </button>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li>
+                        <Link href="/user/offers" className={`flex flex-col items-center ${getLinkClassName('/user/offers')}`}>
+                          <ShoppingBagIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Offers</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/user/fund" className={`flex flex-col items-center ${getLinkClassName('/user/fund')}`}>
+                          <PlusCircleIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Fund</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <button onClick={handleLogout} className="flex flex-col items-center hover:text-yellow-400 transition-colors duration-200">
+                          <ArrowRightOnRectangleIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Logout</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button onClick={() => setShowPrimaryMenu(true)} className="flex flex-col items-center">
+                          <EllipsisHorizontalIcon className="h-5 w-5 mb-1" />
+                          <span className="text-xs">Back</span>
+                        </button>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              )}
+            </div>
+          )}
 
-      {/* Navbar for large screens */}
-      <nav className="bg-black text-white p-4 fixed w-full top-0 left-0 z-50 shadow-lg hidden lg:flex lg:justify-between lg:items-center lg:py-2 lg:px-6">
-        <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
-          <Link href="/" className="text-2xl font-bold text-white">
-            Byte
-          </Link>
-
-          <div className="flex space-x-6">
-            {isAuthenticated && userType === 'user' && (
+          <div className="hidden md:flex space-x-8 text-white">
+            {!isAuthenticated ? (
               <>
-                <Link href="/user" className={`text-lg font-semibold ${getLinkClassName('/user')}`}>Home</Link>
-                <Link href="/user/offers" className={`text-lg font-semibold ${getLinkClassName('/user/offers')}`}>Offers</Link>
-                <Link href="/user/fund" className={`text-lg font-semibold ${getLinkClassName('/user/fund')}`}>Fund</Link>
-                <Link href="/user/cart" className={`text-lg font-semibold ${getLinkClassName('/user/cart')}`}>Cart</Link>
-                <Link href="/user/profile" className={`text-lg font-semibold ${getLinkClassName('/user/profile')}`}>Profile</Link>
-                <Link href="/user/notifications" className={`text-lg font-semibold ${getLinkClassName('/user/notifications')}`}>Notifications</Link>
-              </>
-            )}
-            {isAuthenticated && userType === 'restaurant' && (
-              <>
-                <Link href="/restaurant/dashboard" className={`text-lg font-semibold ${getLinkClassName('/restaurant/dashboard')}`}>Dashboard</Link>
-                <Link href="/restaurant/orders" className={`text-lg font-semibold ${getLinkClassName('/restaurant/orders')}`}>Orders</Link>
-                <Link href="/restaurant/menu" className={`text-lg font-semibold ${getLinkClassName('/restaurant/menu')}`}>Menu</Link>
-                <Link href="/restaurant/notifications" className={`text-lg font-semibold ${getLinkClassName('/restaurant/notifications')}`}>Notifications</Link>
-              </>
-            )}
-          </div>
-
-          <div>
-            {isAuthenticated ? (
-              <button
-                onClick={handleLogout}
-                className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200"
-              >
-                Logout
-              </button>
-            ) : (
-              <>
-                <Link href="/signup" className="text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
-                  Signup
+                <Link href="/signup" className={`text-lg font-semibold ${getLinkClassName('/signup')}`}>
+                  Sign Up
                 </Link>
-                <Link href="/login" className="ml-4 text-lg font-semibold hover:text-gray-400 transition-colors duration-200">
+                <Link href="/login" className={`text-lg font-semibold ${getLinkClassName('/login')}`}>
                   Login
                 </Link>
+              </>
+            ) : userType === 'restaurant' ? (
+              <>
+                <Link href="/restaurant/meals" className={`text-lg font-semibold ${getLinkClassName('/restaurant/meals')}`}>
+                  Meals
+                </Link>
+                <Link href="/restaurant/orders" className={`text-lg font-semibold ${getLinkClassName('/restaurant/orders')}`}>
+                  Orders
+                </Link>
+                <Link href="/restaurant/notifications" className={`text-lg font-semibold ${getLinkClassName('/restaurant/notifications')}`}>
+                  Notifications
+                </Link>
+                <Link href="/restaurant/profile" className={`text-lg font-semibold ${getLinkClassName('/restaurant/profile')}`}>
+                  Profile
+                </Link>
+                <button onClick={handleLogout} className="text-lg font-semibold hover:text-yellow-400 transition-colors duration-200">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/user" className={`text-lg font-semibold ${getLinkClassName('/user')}`}>
+                  Home
+                </Link>
+                <Link href="/user/cart" className={`text-lg font-semibold ${getLinkClassName('/user/cart')}`}>
+                  Cart
+                </Link>
+                <Link href="/user/notifications" className={`text-lg font-semibold ${getLinkClassName('/user/notifications')}`}>
+                  Notifications
+                </Link>
+                <Link href="/user/profile" className={`text-lg font-semibold ${getLinkClassName('/user/profile')}`}>
+                  Profile
+                </Link>
+                <button onClick={handleLogout} className="text-lg font-semibold hover:text-yellow-400 transition-colors duration-200">
+                  Logout
+                </button>
               </>
             )}
           </div>

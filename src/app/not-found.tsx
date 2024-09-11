@@ -7,10 +7,9 @@ import Link from 'next/link';
 const Custom404: React.FC = () => {
   return (
     <div className="relative min-h-screen bg-black">
-      {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/Images/burger.jpg" // Replace with your burger image path
+          src="/Images/burger.jpg" 
           alt="Burger Background"
           fill
           style={{ objectFit: 'cover' }}
