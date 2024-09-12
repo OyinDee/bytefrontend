@@ -3,7 +3,6 @@
 
 import React, { useEffect } from 'react';
 import './globals.css';
-import MetaTags from './MetaTags'
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Head from 'next/head'
