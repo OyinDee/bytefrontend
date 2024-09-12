@@ -75,7 +75,7 @@ const MealsPage = () => {
   };
 
   return (
-    <div className="p-8 bg-white min-h-screen">
+    <div className="p-8 bg-white min-h-screen pb-20">
       <h1 className="text-3xl font-bold mb-8 text-black">Admin Dashboard - Meals</h1>
 
       <div className="mb-12">

@@ -40,7 +40,7 @@ const RestaurantDashboard: React.FC = () => {
   const totalIncome = restaurant?.totalIncome || 0;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 pb-20">
 
       {restaurant && (
         <div className="bg-white p-6 rounded-lg shadow-md mb-10">

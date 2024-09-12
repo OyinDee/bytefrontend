@@ -21,7 +21,7 @@ const NotificationsPage = () => {
 
   return (
     <div className="p-8 bg-white min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-black">Notifications</h1>
+      <h1 className="text-3xl pb-20 font-bold mb-8 text-black">Notifications</h1>
 
       <div className="space-y-4">
         {notifications.length > 0 ? (
