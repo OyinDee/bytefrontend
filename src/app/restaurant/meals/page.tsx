@@ -1,5 +1,7 @@
+"use client"
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 
 interface Meal {
   customId: string;
@@ -16,7 +18,7 @@ const MealsPage = () => {
   const [form, setForm] = useState({
     name: '',
     description: '',
-    tag: 'regular', 
+    tag: 'regular',
     price: '',
     imageUrl: '',
     availability: 'true',
@@ -76,7 +78,6 @@ const MealsPage = () => {
     <div className="p-8 bg-white min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-black">Admin Dashboard - Meals</h1>
 
-      {/* Display list of meals */}
       <div className="mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-yellow-500">Current Meals</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -94,11 +95,14 @@ const MealsPage = () => {
                   Availability: {meal.availability ? 'Available' : 'Not Available'}
                 </p>
                 {meal.imageUrl && (
-                  <img
-                    src={meal.imageUrl}
-                    alt={meal.name}
-                    className="mt-4 w-full h-32 object-cover rounded-lg"
-                  />
+                  <div className="mt-4 w-full h-32 relative">
+                    <Image
+                      src={meal.imageUrl}
+                      alt={meal.name}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
                 )}
               </div>
             ))
@@ -108,7 +112,6 @@ const MealsPage = () => {
         </div>
       </div>
 
-      {/* Add meal form */}
       <div className="max-w-xl mx-auto">
         <h2 className="text-2xl font-semibold mb-4 text-yellow-500">Add New Meal</h2>
         <form onSubmit={handleFormSubmit} className="bg-gray-100 p-6 rounded-lg shadow-lg">
