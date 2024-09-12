@@ -41,11 +41,14 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
 <>
-
+<html>
+  <body>
     <MetaTags />
 
       <Navbar />
       <main>{children}</main>
+    </body>
+    </html>
 </>
   );
 }
