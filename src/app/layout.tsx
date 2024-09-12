@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Head from 'next/head'
 import { jwtDecode } from 'jwt-decode';
-import Head from 'next/head';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
