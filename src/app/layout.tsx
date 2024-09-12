@@ -1,65 +1,59 @@
-
-"use client";
-
-import React, { useEffect } from 'react';
+import { Inter } from "next/font/google";
 import './globals.css';
-import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Head from 'next/head'
-import { jwtDecode } from 'jwt-decode';
+import { Metadata } from 'next';
+import RestaurantNavbar from '@/components/RestaurantNavbar';
+import UserNavbar from '@/components/UserNavbar';
+import PublicNavbar from '@/components/PublicNavbar';
+import { usePathname } from 'next/navigation';
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Byte",
+  description: "...Fast and hungry!",
+  generator: "Next.js",
+  manifest: "/manifest.json",
+  keywords: ["nextjs", "next14", "pwa", "next-pwa"],
+  themeColor: [{ color: "#fff" }],
+  authors: [
+    {
+      name: "Diidee",
+      url: "https://github.com/oyindee",
+    },
+  ],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+  },
+  icons: [
+    { rel: "apple-touch-icon", url: "icons/pizza.png" },
+    { rel: "icon", url: "icons/pizza.png" },
+  ],
+};
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const router = useRouter();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode<any>(token);
-        if (decodedToken.user) {
-          localStorage.setItem('byteUser', JSON.stringify(decodedToken.user));
-        } else if (decodedToken.restaurant) {
-          router.push('/restaurant/dashboard');
-        } else {
-          localStorage.removeItem('token');
-          router.push('/login');
-        }
-      } catch (error) {
-        console.error('Invalid token', error);
-        localStorage.removeItem('token');
-        router.push('/login');
-      }
+  const renderNavbar = () => {
+    if (pathname.startsWith('/restaurant')) {
+      return <RestaurantNavbar />;
+    } else if (pathname.startsWith('/user')) {
+      return <UserNavbar />;
     } else {
-      router.push('/login');
+      return <PublicNavbar />;
     }
-  }, [router]);
+  };
 
   return (
-<>
-<html>
-<Head>
-      <title>Byte</title>
-      <meta name="description" content="...Fast and hungry!" />
-      <meta name="generator" content="Next.js" />
-      <meta name="manifest" content="/manifest.json" />
-      <meta name="keywords" content="nextjs, next14, pwa, next-pwa" />
-      <meta name="theme-color" content="#fff" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="apple-touch-icon" href="/icons/pizza.png" />
-      <link rel="icon" href="/icons/pizza-32x32.png" sizes="32x32" />
-      <link rel="icon" href="/icons/pizza-192x192.png" sizes="192x192" />
-    </Head>
-  <body>
-    
-
-      <Navbar />
-      <main>{children}</main>
-    </body>
+    <html>
+      <body className={inter.className}>
+          {renderNavbar()}
+          <main>{children}</main>
+      </body>
     </html>
-</>
   );
 }
