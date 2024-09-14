@@ -7,7 +7,6 @@ import { Carousel } from 'react-responsive-carousel';
 import AOS from "aos";
 import "aos/dist/aos.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import RestaurantListings from "@/components/AllRestaurants";
 import { Restaurant } from "../../components/types";
 
 interface Meal {
@@ -68,13 +67,14 @@ const CombinedPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    AOS.init({ duration: 1000 });
+
+      AOS.init({ duration: 1000 });
+      AOS.refresh();  
 
     const fetchRestaurants = async () => {
       try {
         const response = await axios.get('https://mongobyte.onrender.com/api/v1/restaurants');
         setRestaurants(response.data);
-        console.log(response.data)
       } catch (error) {
         setError('Error fetching restaurants. Please try again.');
       } finally {
@@ -105,7 +105,7 @@ const CombinedPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div  data-aos="fade-in">
       <main className="p-4 lg:p-8 bg-white text-black pt-5 pb-20 min-h-screen lg:pt-5">
         {/* Search Bar */}
         <section className="mb-6">
@@ -148,7 +148,7 @@ const CombinedPage: React.FC = () => {
                 />
                 <h3 className="text-xl font-semibold mt-2 text-black">{meal.name}</h3>
                 <p className="text-gray-600">{meal.description}</p>
-                <p className="text-yellow-500 font-semibold">${meal.price.toFixed(2)}</p>
+                <p className="text-yellow-500 font-semibold">B{meal.price.toFixed(2)}</p>
                 <button className='btn w-full bg-yellow-500 mt-2 text-white p-2'>Add To Cart!</button>
               </div>
             ))}
@@ -196,8 +196,19 @@ const CombinedPage: React.FC = () => {
                           <ul className="mt-2 space-y-2">
                             {restaurant.meals.map((meal) => (
                               <li key={meal.customId} className="border-b py-2">
-                                <p className="text-black"><strong>{meal.name}</strong> - ${meal.price}</p>
-                                <p className="text-gray-500">{meal.description}</p>
+                                <div className="flex space-x-4">
+                                  <Image
+                                    src={meal.imageUrl}
+                                    alt={meal.name}
+                                    width={100}
+                                    height={60}
+                                    className="object-cover rounded"
+                                  />
+                                  <div>
+                                    <p className="text-black"><strong>{meal.name}</strong> - B{meal.price}</p>
+                                    <p className="text-gray-500">{meal.description}</p>
+                                  </div>
+                                </div>
                               </li>
                             ))}
                           </ul>
