@@ -105,7 +105,7 @@ const CombinedPage: React.FC = () => {
   };
 
   return (
-    <div  data-aos="fade-in">
+    <div  data-aos="fade-up">
       <main className="p-4 lg:p-8 bg-white text-black pt-5 pb-20 min-h-screen lg:pt-5">
         {/* Search Bar */}
         <section className="mb-6">
