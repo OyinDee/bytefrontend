@@ -13,7 +13,7 @@ interface CartMeal {
   quantity: number;
 }
 
-// Mock demo cart items (to be replaced with localStorage data)
+
 const demoCart: CartMeal[] = [
   {
     customId: 'hgtr56',
@@ -39,7 +39,6 @@ const CartPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Load cart from localStorage or use demoCart
     const storedCart = localStorage.getItem('byteCart');
     const parsedCart = storedCart ? JSON.parse(storedCart) : demoCart;
 
@@ -54,16 +53,15 @@ const CartPage: React.FC = () => {
   const handleRemoveItem = (customId: string) => {
     const updatedCart = cartMeals.filter((meal) => meal.customId !== customId);
     setCartMeals(updatedCart);
-    localStorage.setItem('byteCart', JSON.stringify(updatedCart)); // Optionally update localStorage
+    localStorage.setItem('byteCart', JSON.stringify(updatedCart)); 
   };
 
   const handleCheckout = () => {
     alert('Proceeding to checkout!');
-    // Add your checkout logic here
   };
 
   return (
-    <main className="min-h-screen bg-white text-black p-4 lg:p-8 py-20">
+    <main className="min-h-screen bg-white text-black p-4 lg:p-8 pb-24">
       <h1 className="text-3xl font-semibold text-yellow-600"></h1>
       
       {loading ? (
@@ -85,34 +83,37 @@ const CartPage: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {demoCart.map((meal) => (
-            <div
-              key={meal.customId}
-              className="flex flex-col sm:flex-row items-center bg-white shadow-md rounded-lg p-4 border border-gray-200"
-            >
-              <Image
-                src={meal.imageUrl}
-                alt={meal.name}
-                width={500}
-                height={300}
-                className="w-full sm:w-1/4 h-40 object-cover rounded-lg"
-              />
-              <div className="sm:ml-6 w-full sm:w-3/4 my-auto text-center">
-                <h2 className="text-xl font-semibold text-black">{meal.name}</h2>
-                <p className="mt-1 text-gray-600">{meal.description}</p>
-                <p className="mt-2 text-yellow-500 font-semibold">${meal.price.toFixed(2)} x {meal.quantity}</p>
-                <p className="mt-1 text-black">
-                  Total: ${(meal.price * meal.quantity).toFixed(2)}
-                </p>
-                <button
-                  onClick={() => handleRemoveItem(meal.customId)}
-                  className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200 w-full"
-                >
-                  Remove Item
-                </button>
-              </div>
-            </div>
-          ))}
+{cartMeals.map((meal) => (
+  <div
+    key={meal.customId}
+    className="flex flex-col sm:flex-row items-center bg-white shadow-md rounded-lg p-4 border border-gray-200"
+  >
+    <Image
+      src={meal.imageUrl}
+      alt={meal.name}
+      width={500}
+      height={300}
+      className="w-full sm:w-1/4 h-40 object-cover rounded-lg"
+    />
+    <div className="sm:ml-6 w-full sm:w-3/4 my-auto text-center">
+      <h2 className="text-xl font-semibold text-black">{meal.name}</h2>
+      <p className="mt-1 text-gray-600">{meal.description}</p>
+      <p className="mt-2 text-yellow-500 font-semibold">
+        ${meal.price.toFixed(2)} x {meal.quantity}
+      </p>
+      <p className="mt-1 text-black">
+        Total: ${(meal.price * meal.quantity).toFixed(2)}
+      </p>
+      <button
+        onClick={() => handleRemoveItem(meal.customId)}
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200 w-full"
+      >
+        Remove Item
+      </button>
+    </div>
+  </div>
+))}
+
 
           <div className="text-right mt-8">
             <p className="text-xl font-semibold text-black">Total Price: <span className="text-yellow-500">${getTotalPrice()}</span></p>

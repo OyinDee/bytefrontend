@@ -7,12 +7,36 @@ import Image from 'next/image';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
+import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 
 const Landing: React.FC = () => {
+  const router = useRouter();
+
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
-
+  useEffect(() => {
+    
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<any>(token);
+        if (decodedToken.user) {
+          router.push('/user/');
+        }
+        if (decodedToken.restaurant) {
+          router.push('/restaurant/dashboard');
+        }
+        else{
+          localStorage.removeItem('token');
+        }
+      } catch (error) {
+        
+      }
+    }
+  }, [router]);
+  
   const carouselSettings = {
     dots: true,
     infinite: true,

@@ -19,7 +19,7 @@ interface DecodedToken {
 
 const RestaurantDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Pending' | 'Confirmed' | 'Delivered'>('Pending');
-  const [restaurant, setRestaurant] = useState<any>(null); // Update with the correct type
+  const [restaurant, setRestaurant] = useState<any>(null); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');

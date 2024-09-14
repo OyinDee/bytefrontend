@@ -51,14 +51,6 @@ const CallbackPage = () => {
             ? 'There was an issue with processing your payment.'
             : 'Click the button below to verify your payment.'}
         </p>
-
-        <button
-          className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:bg-gray-400"
-          onClick={verifyPayment}
-          disabled={loading || !reference}
-        >
-          {loading ? 'Verifying...' : 'Verify Payment'}
-        </button>
       </div>
     </main>
   );

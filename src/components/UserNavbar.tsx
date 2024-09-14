@@ -29,6 +29,9 @@ const UserNavbar: React.FC = () => {
       localStorage.removeItem('token');
       router.push('/login');
     }
+    else{
+      alert("Thanks, I guess")
+    }
   };
 
   return (
@@ -54,7 +57,7 @@ const UserNavbar: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/user/notifications" className={`flex flex-col items-center ${getLinkClassName('/user/notifications')}`}>
+                  <Link href="/user/hii" className={`flex flex-col items-center ${getLinkClassName('/user/hii')}`}>
                     <BellIcon className="h-5 w-5 mb-1" />
                     <span className="text-xs">Notifs</span>
                   </Link>
@@ -104,7 +107,7 @@ const UserNavbar: React.FC = () => {
           <Link href="/user/cart" className={`text-lg font-semibold ${getLinkClassName('/user/cart')}`}>
             Cart
           </Link>
-          <Link href="/user/notifications" className={`text-lg font-semibold ${getLinkClassName('/user/notifications')}`}>
+          <Link href="/user/hii" className={`text-lg font-semibold ${getLinkClassName('/user/hii')}`}>
             Notifications
           </Link>
           <Link href="/user/profile" className={`text-lg font-semibold ${getLinkClassName('/user/profile')}`}>

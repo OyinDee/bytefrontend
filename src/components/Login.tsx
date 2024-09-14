@@ -28,6 +28,9 @@ const Login: React.FC = () => {
         if (decodedToken.restaurant) {
           router.push('/restaurant/dashboard');
         }
+        else{
+          localStorage.removeItem('token');
+        }
       } catch (error) {
         
       }

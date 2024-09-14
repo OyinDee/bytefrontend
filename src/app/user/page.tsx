@@ -74,6 +74,7 @@ const CombinedPage: React.FC = () => {
       try {
         const response = await axios.get('https://mongobyte.onrender.com/api/v1/restaurants');
         setRestaurants(response.data);
+        console.log(response.data)
       } catch (error) {
         setError('Error fetching restaurants. Please try again.');
       } finally {
