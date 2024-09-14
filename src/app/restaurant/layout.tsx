@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import '../globals.css';
-import { useRouter, usePathname } from 'next/navigation'; // Import usePathname for path checking
-import Navbar from "../../components/Navbar";
+import { useRouter, usePathname } from 'next/navigation'; 
 import { jwtDecode } from 'jwt-decode';
 
 interface LayoutProps {
