@@ -1,8 +1,8 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+"use client";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 interface Transaction {
   date: string;
@@ -17,6 +17,7 @@ interface User {
   phoneNumber: number;
   totalBytes: number;
   byteBalance: number;
+  nearestLandmark?: string;
   orderHistory: Transaction[];
   imageUrl?: string;
   bio?: string;
@@ -26,33 +27,38 @@ interface User {
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [bio, setBio] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
+  const [bio, setBio] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [nearestLandmark, setNearestLandmark] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get('https://mongobyte.onrender.com/api/v1/users/getProfile', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const response = await axios.get(
+            "https://mongobyte.onrender.com/api/v1/users/getProfile",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           const decodedToken = jwtDecode<any>(response.data.token);
-          localStorage.setItem('token', response.data.token);
-          localStorage.setItem('byteUser', JSON.stringify(decodedToken.user));
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("byteUser", JSON.stringify(decodedToken.user));
           setUser(decodedToken.user);
-          setBio(decodedToken.user.bio || '');
-          setLocation(decodedToken.user.location || '');
+          setBio(decodedToken.user.bio || "");
+          setLocation(decodedToken.user.location || "");
+          setNearestLandmark(decodedToken.user.nearestLandmark || "");
           setLoading(false);
         } catch (error) {
-          setError('Failed to load user data. Please try again later.');
+          setError("Failed to load user data. Please try again later.");
           setLoading(false);
         }
       } else {
-        setError('No user token found. Please log in.');
+        setError("No user token found. Please log in.");
         setLoading(false);
       }
     };
@@ -73,16 +79,19 @@ const Profile: React.FC = () => {
   const handleImageUpload = async () => {
     if (!selectedImage) return;
     try {
-      const response = await axios.post('https://mongobyte.onrender.com/api/v1/users/upload', { image: selectedImage });
+      const response = await axios.post(
+        "https://mongobyte.onrender.com/api/v1/users/upload",
+        { image: selectedImage }
+      );
       return response.data.url;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
       throw error;
     }
   };
 
   const updateUserProfile = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) return;
     try {
       let imageUrl = user?.imageUrl;
@@ -91,8 +100,8 @@ const Profile: React.FC = () => {
       }
 
       await axios.post(
-        'https://mongobyte.onrender.com/api/v1/users/updateProfile',
-        { imageUrl, bio, location },
+        "https://mongobyte.onrender.com/api/v1/users/updateProfile",
+        { imageUrl, bio, location, nearestLandmark },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUser((prevUser) => ({
@@ -100,10 +109,11 @@ const Profile: React.FC = () => {
         imageUrl,
         bio,
         location,
+        nearestLandmark,
       }));
       setIsModalOpen(false); // Close modal after successful update
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error("Error updating user profile:", error);
     }
   };
 
@@ -116,11 +126,19 @@ const Profile: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen"><p>Loading...</p></div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex justify-center items-center min-h-screen text-red-500"><p>{error}</p></div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-500">
+        <p>{error}</p>
+      </div>
+    );
   }
 
   return (
@@ -137,26 +155,27 @@ const Profile: React.FC = () => {
                 className="rounded-full border-4 border-yellow-300 mb-4 object-cover"
               />
             </div>
-            <h1 className="text-3xl font-bold mb-2 lg:text-4xl">@{user?.username.toLowerCase()}</h1>
+            <h1 className="text-3xl font-bold mb-2 lg:text-4xl">
+              @{user?.username.toLowerCase()}
+            </h1>
             <p className="text-lg text-gray-700 mb-2 lg:text-xl">{user?.email}</p>
-            <p className="text-gray-600">{user?.location || "Unknown Location"}</p>
+
             <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600">
               {user?.bio || "Life is uncertain. Eat dessert first!"}
             </blockquote>
-
-            {/* Floating icon */}
-            <button
-              onClick={openModal}
-              className="absolute top-4 right-4 bg-yellow-300 p-2 rounded-full shadow-lg hover:bg-yellow-400 transition-colors duration-200"
-            >
-              ✏️
-            </button>
           </div>
 
           <div className="mt-6 flex flex-col lg:flex-row lg:justify-between">
             <div className="mb-4 lg:mb-0">
               <h2 className="text-xl font-semibold mb-2">Phone Number</h2>
               <p className="text-lg">{user?.phoneNumber}</p>
+            </div>
+            <div className="mb-4 lg:mb-0">
+              <h2 className="text-xl font-semibold mb-2">Location</h2>
+              <p className="text-lg">{user?.location || "Unknown"}</p>
+            </div>            <div className="mb-4 lg:mb-0">
+              <h2 className="text-xl font-semibold mb-2">Nearest Landmark</h2>
+              <p className="text-lg">{user?.nearestLandmark|| "N/A"}</p>
             </div>
             <div className="flex flex-col lg:flex-row lg:justify-between">
               <div className="mb-4 lg:mb-0">
@@ -174,7 +193,10 @@ const Profile: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">Order History</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {user?.orderHistory.map((transaction, index) => (
-                <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg">
+                <div
+                  key={index}
+                  className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg"
+                >
                   <p>{transaction.date}</p>
                   <p className="font-semibold">{transaction.description}</p>
                   <p className="text-green-600">{transaction.amount}</p>
@@ -182,13 +204,23 @@ const Profile: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Edit Button at the end */}
+          <div className="flex justify-end mt-8">
+            <button
+              onClick={openModal}
+              className="bg-yellow-600 w-full text-lg p-3 rounded-sm shadow-lg hover:bg-yellow-400 transition-colors duration-200"
+            >
+              Edit Profile
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Modal for editing profile */}
+
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg relative z-60">
             <h2 className="text-2xl mb-4">Edit Profile</h2>
             <input
               type="file"
@@ -210,20 +242,25 @@ const Profile: React.FC = () => {
               onChange={(e) => setLocation(e.target.value)}
               className="border border-gray-300 p-2 w-full mb-4"
             />
-            <div className="flex justify-between">
-              <button
-                onClick={updateUserProfile}
-                className="bg-blue-500 text-white p-2 rounded-md"
-              >
-                Save Changes
-              </button>
-              <button
-                onClick={closeModal}
-                className="bg-gray-500 text-white p-2 rounded-md"
-              >
-                Cancel
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="Nearest Landmark"
+              value={nearestLandmark}
+              onChange={(e) => setNearestLandmark(e.target.value)}
+              className="border border-gray-300 p-2 w-full mb-4"
+            />
+            <button
+              onClick={updateUserProfile}
+              className="bg-yellow-300 text-lg p-3 rounded-md shadow-lg hover:bg-yellow-400 transition-colors duration-200 w-full"
+            >
+              Save Changes
+            </button>
+            <button
+              onClick={closeModal}
+              className="mt-4 text-gray-500 hover:text-gray-800"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
