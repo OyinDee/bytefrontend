@@ -1,4 +1,3 @@
-
 export interface Meal {
   customId: string;
   name: string;
@@ -7,8 +6,9 @@ export interface Meal {
   availability: boolean;
   imageUrl?: string;
   tag: "regular" | "combo" | "add-on";
-  per?: string;
-  
+  per?: string;  
+  quantity?: number; 
+  restaurantId?: string;
 }
 
 

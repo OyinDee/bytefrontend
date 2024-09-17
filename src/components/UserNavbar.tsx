@@ -3,16 +3,8 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  HomeIcon,
-  ShoppingCartIcon,
-  BellIcon,
-  UserIcon,
-  PlusCircleIcon,
-  ArrowRightOnRectangleIcon,
-  EllipsisHorizontalIcon,
-} from '@heroicons/react/24/outline';
-import { useCart } from '../app/user/cartContext'; 
+import { HomeIcon, ShoppingCartIcon, BellIcon, UserIcon, PlusCircleIcon, ArrowRightOnRectangleIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
+import { useCart } from '../app/user/cartContext';
 
 const UserNavbar: React.FC = () => {
   const pathname = usePathname();
@@ -21,19 +13,15 @@ const UserNavbar: React.FC = () => {
   const { getItemCount } = useCart();
   const itemCount = getItemCount();
 
-  const getLinkClassName = (path: string) => {
-    return pathname === path ? 'text-yellow-400' : 'hover:text-yellow-400 transition-colors duration-200';
-  };
+  const getLinkClassName = (path: string) => pathname === path ? 'text-yellow-400' : 'hover:text-yellow-400 transition-colors duration-200';
 
   const handleLogout = () => {
-    const confirmLogout = confirm("Do you really want to log out?");
-    if (confirmLogout) {
+    if (confirm("Do you really want to log out?")) {
       alert("Aiit, calm... You have it!");
       localStorage.removeItem('token');
       router.push('/login');
-    }
-    else{
-      alert("Thanks, I guess")
+    } else {
+      alert("Thanks, I guess");
     }
   };
 
@@ -43,8 +31,9 @@ const UserNavbar: React.FC = () => {
         <Link href="/" className="text-white text-2xl font-bold">
           Byte!
         </Link>
+        
         <div className="fixed bottom-0 inset-x-0 bg-black p-4 md:hidden flex justify-between items-center z-50">
-          <ul className="flex justify-between w-full text-white">
+          <ul className="flex justify-between w-full text-white relative">
             {showPrimaryMenu ? (
               <>
                 <li>
@@ -53,13 +42,14 @@ const UserNavbar: React.FC = () => {
                     <span className="text-xs">Home</span>
                   </Link>
                 </li>
-                
-                <li>
+                <li className="relative">
                   <Link href="/user/cart" className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}>
                     <ShoppingCartIcon className="h-5 w-5 mb-1" />
                     <span className="text-xs">Cart</span>
                     {itemCount > 0 && (
-                      <span className="absolute top-0 right-0 text-xs text-yellow-400 bg-black rounded-full px-2 py-1">{itemCount}</span>
+                      <span className="absolute -top-2 left-4 text-xs text-yellow-400  rounded-full px-2 py-1">
+                        {itemCount}
+                      </span>
                     )}
                   </Link>
                 </li>
@@ -111,10 +101,12 @@ const UserNavbar: React.FC = () => {
           <Link href="/user" className={`text-lg font-semibold ${getLinkClassName('/user')}`}>
             Home
           </Link>
-          <Link href="/user/cart" className={`text-lg font-semibold ${getLinkClassName('/user/cart')}`}>
+          <Link href="/user/cart" className={`text-lg font-semibold relative ${getLinkClassName('/user/cart')}`}>
             Cart
             {itemCount > 0 && (
-              <span className="ml-2 text-xs text-yellow-400 bg-black rounded-full px-2 py-1">{itemCount}</span>
+              <span className="absolute -top-2 left-4 text-xs text-yellow-400 rounded-full px-2 py-1">
+                {itemCount}
+              </span>
             )}
           </Link>
           <Link href="/user/hii" className={`text-lg font-semibold ${getLinkClassName('/user/hii')}`}>

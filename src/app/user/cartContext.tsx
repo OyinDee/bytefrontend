@@ -1,20 +1,20 @@
-"use client"
-import React, { createContext, useState, useContext, FC, ReactNode } from "react";
-import { Meal } from '@/components/types';
+"use client";
+
+import React, { createContext, useState, useContext, useEffect, FC, ReactNode } from "react";
+import { Meal } from "@/components/types";
 
 interface CartItem {
   meal: Meal;
   quantity: number;
-  restaurantName: string;
 }
 
 interface CartContextType {
-  cart: Map<string, CartItem>;
-  addToCart: (meal: Meal) => void;
-  updateQuantity: (meal: Meal, change: number) => void;
+  cart: Map<string, CartItem[]>;
+  addToCart: (meal: Meal, quantity: number) => void;
+  updateQuantity: (mealId: string, quantity: number) => void;
   clearCart: () => void;
-  getItemCount: () => number;  // Add getItemCount here
-  
+  getItemCount: () => number;
+  getTotalPrice: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,33 +28,56 @@ export const useCart = () => {
 };
 
 export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<Map<string, CartItem>>(new Map());
+  const [cart, setCart] = useState<Map<string, CartItem[]>>(new Map());
 
-  const addToCart = (meal: Meal) => {
-    setCart(prevCart => {
-      const updatedCart = new Map(prevCart);
-      const currentItem = updatedCart.get(meal.customId);
-      if (currentItem) {
-        updatedCart.set(meal.customId, { ...currentItem, quantity: currentItem.quantity });
-      } else {
-        updatedCart.set(meal.customId, { meal, quantity: 1, restaurantName: "" });
-      }
-      localStorage.setItem("cart", JSON.stringify(Array.from(updatedCart.entries())));
-      return updatedCart;
-    });
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCart(new Map(JSON.parse(storedCart)));
+    }
+  }, []);
+
+  const addToCart = (meal: Meal, quantity: number) => {
+    if (!meal.restaurantId) {
+      console.error("Meal does not have a restaurantId.");
+      return;
+    }
+
+    const newCart = new Map(cart);
+    const restaurantId = meal.restaurantId;
+    if (!newCart.has(restaurantId)) {
+      newCart.set(restaurantId, []);
+    }
+    const items = newCart.get(restaurantId) || [];
+    const existingItem = items.find(item => item.meal.customId === meal.customId);
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      items.push({ meal, quantity });
+    }
+    newCart.set(restaurantId, items);
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(Array.from(newCart.entries())));
   };
 
-  const updateQuantity = (meal: Meal, change: number) => {
+  const updateQuantity = (mealId: string, quantity: number) => {
     setCart(prevCart => {
       const updatedCart = new Map(prevCart);
-      const currentItem = updatedCart.get(meal.customId);
+      var currentItems = Array.from(updatedCart.values()).flat();
+      const currentItem = currentItems.find(item => item.meal.customId === mealId);
+
       if (currentItem) {
-        const newQuantity = Math.max(1, currentItem.quantity + change);
-        updatedCart.set(meal.customId, { ...currentItem, quantity: newQuantity });
-      } else {
-        updatedCart.set(meal.customId, { meal, quantity: Math.max(1, change), restaurantName: "" });
+        if (quantity > 0) {
+          currentItem.quantity = quantity;
+        } else {
+          currentItems = currentItems.filter(item => item.meal.customId !== mealId);
+        }
+        if (currentItem.meal.restaurantId) {
+          updatedCart.set(currentItem.meal.restaurantId, currentItems);
+        }
+        localStorage.setItem("cart", JSON.stringify(Array.from(updatedCart.entries())));
       }
-      localStorage.setItem("cart", JSON.stringify(Array.from(updatedCart.entries())));
+
       return updatedCart;
     });
   };
@@ -65,13 +88,20 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const getItemCount = () => {
-    let count = 0;
-    cart.forEach(item => count += item.quantity);
-    return count;
+    return Array.from(cart.values()).flat().reduce((count, item) => count + item.quantity, 0);
+  };
+
+  const getTotalPrice = () => {
+    return Array.from(cart.values()).flat().reduce(
+      (total, item) => total + item.meal.price * item.quantity,
+      0
+    );
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, clearCart, getItemCount }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, updateQuantity, clearCart, getItemCount, getTotalPrice }}
+    >
       {children}
     </CartContext.Provider>
   );

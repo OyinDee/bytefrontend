@@ -1,8 +1,10 @@
-"use client";
-
-import { useState, useEffect } from "react";
+"use client"
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
+import Loading from './loading'; 
 
 const FundPage: React.FC = () => {
   const [amount, setAmount] = useState<number | ''>('');
@@ -20,13 +22,26 @@ const FundPage: React.FC = () => {
   const NAIRA_TO_BYTES_RATE = 0.1;
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('byteUser');
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-    } else {
-      // Handle user not found (redirect to login or show message)
-    }
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get(
+            "https://mongobyte.onrender.com/api/v1/users/getProfile",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setUser(response.data.user);
+        } catch (error) {
+          toast.error("Failed to load user data. Please try again later.");
+        }
+      } else {
+        toast.error("No user token found. Please log in.");
+      }
+    };
+
+    fetchUser();
   }, [router]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +50,6 @@ const FundPage: React.FC = () => {
       setAmount('');
       setFee(0);
       setTotal(0);
-      
       setBytes(0);
     } else {
       const calculatedFee = inputAmount * 0.03; 
@@ -51,7 +65,7 @@ const FundPage: React.FC = () => {
   const handleContinue = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Authentication token not found. Please log in again.');
+      toast.error('Authentication token not found. Please log in again.');
       return;
     }
 
@@ -72,11 +86,10 @@ const FundPage: React.FC = () => {
       if (response.ok) {
         window.location.href = data.url;
       } else {
-        alert(`Error: ${data.message || 'An error occurred'}`);
+        toast.error(data.message || 'An error occurred');
       }
     } catch (error) {
-      console.error('Payment initiation failed:', error);
-      alert('Payment initiation failed.');
+      toast.error('Payment initiation failed.');
     } finally {
       setLoading(false);
     }
@@ -85,12 +98,12 @@ const FundPage: React.FC = () => {
   const handleTransfer = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Authentication token not found. Please log in again.');
+      toast.error('Authentication token not found. Please log in again.');
       return;
     }
 
     if (!recipientUsername || !transferAmount || transferAmount <= 0) {
-      alert('Please provide valid recipient username and transfer amount.');
+      toast.error('Please provide valid recipient username and transfer amount.');
       return;
     }
 
@@ -110,19 +123,18 @@ const FundPage: React.FC = () => {
         }
       );
 
-      // Handle successful transfer
-      alert(`Transfer Successful: ${response.data.message}`);
+      toast.success(`Transfer Successful: ${response.data.message}`);
+      router.push('/user/fund'); 
     } catch (error: any) {
-      // Handle error and show error message
       const errorMsg = error.response?.data?.message || 'Transfer failed';
-      alert(`Error: ${errorMsg}`);
+      toast.error(`Error: ${errorMsg}`);
     } finally {
       setTransferLoading(false);
     }
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <Loading />; // Show loading component while user data is fetched
   }
 
   return (
@@ -211,17 +223,18 @@ const FundPage: React.FC = () => {
                   placeholder="Enter amount"
                 />
               </div>
+
               <div>
-                <label htmlFor="recipient" className="block text-lg font-medium text-gray-700">
+                <label htmlFor="recipientUsername" className="block text-lg font-medium text-gray-700">
                   Recipient Username
                 </label>
                 <input
                   type="text"
-                  id="recipient"
+                  id="recipientUsername"
                   value={recipientUsername}
                   onChange={(e) => setRecipientUsername(e.target.value)}
                   className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
-                  placeholder="Enter recipient's username"
+                  placeholder="Recipient username"
                 />
               </div>
 
@@ -231,7 +244,7 @@ const FundPage: React.FC = () => {
                 className="w-full bg-yellow-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-yellow-600 transition duration-200"
                 disabled={transferAmount === '' || recipientUsername === '' || transferLoading}
               >
-                {transferLoading ? 'Processing...' : 'Transfer'}
+                {transferLoading ? 'Transferring...' : 'Transfer'}
               </button>
             </form>
           </div>
