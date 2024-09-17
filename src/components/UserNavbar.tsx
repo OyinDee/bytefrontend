@@ -12,11 +12,14 @@ import {
   ArrowRightOnRectangleIcon,
   EllipsisHorizontalIcon,
 } from '@heroicons/react/24/outline';
+import { useCart } from '../app/user/cartContext'; 
 
 const UserNavbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [showPrimaryMenu, setShowPrimaryMenu] = useState(true);
+  const { getItemCount } = useCart();
+  const itemCount = getItemCount();
 
   const getLinkClassName = (path: string) => {
     return pathname === path ? 'text-yellow-400' : 'hover:text-yellow-400 transition-colors duration-200';
@@ -54,6 +57,9 @@ const UserNavbar: React.FC = () => {
                   <Link href="/user/cart" className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}>
                     <ShoppingCartIcon className="h-5 w-5 mb-1" />
                     <span className="text-xs">Cart</span>
+                    {itemCount > 0 && (
+                      <span className="absolute top-0 right-0 text-xs text-yellow-400 bg-black rounded-full px-2 py-1">{itemCount}</span>
+                    )}
                   </Link>
                 </li>
                 <li>
@@ -106,6 +112,9 @@ const UserNavbar: React.FC = () => {
           </Link>
           <Link href="/user/cart" className={`text-lg font-semibold ${getLinkClassName('/user/cart')}`}>
             Cart
+            {itemCount > 0 && (
+              <span className="ml-2 text-xs text-yellow-400 bg-black rounded-full px-2 py-1">{itemCount}</span>
+            )}
           </Link>
           <Link href="/user/hii" className={`text-lg font-semibold ${getLinkClassName('/user/hii')}`}>
             Notifications
