@@ -64,60 +64,61 @@ const CartPage = () => {
     <div className="p-4 bg-white min-h-screen mb-20">
       <ToastContainer />
       <div className="max-w-4xl mx-auto text-black">
-        <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+        <h1 className="text-3xl font-bold text-black mb-6">Your Cart</h1>
         {cart.size === 0 ? (
           <p className="text-center text-gray-500">Your cart is empty.</p>
         ) : (
           Array.from(cart.entries()).map(([restaurantId, items]) => (
-            <div key={restaurantId} className="border-b mb-8 pb-6">
-              <h2 className="text-xl font-semibold mb-4">
+            <div key={restaurantId} className="border-b border-gray-200 mb-8 pb-6">
+              <h2 className="text-xl font-semibold mb-4 text-black">
                 Restaurant: {items.length > 0 ? items[0].meal.restaurantId : "Unknown"}
               </h2>
               <div className="space-y-4">
                 {items.map(({ meal, quantity }) => (
-                  <div key={meal.customId} className="grid grid-cols-3 gap-4 sm:grid-cols-5 items-center">
-                    {meal.imageUrl && (
-                      <div className="relative w-full h-24 sm:h-32">
-                        <Image
-                          src={meal.imageUrl}
-                          alt={meal.name}
-                          layout="fill"
-                          objectFit="cover"
-                          className="rounded"
-                        />
+                  <div key={meal.customId} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      {meal.imageUrl && (
+                        <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+                          <Image
+                            src={meal.imageUrl}
+                            alt={meal.name}
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-lg font-semibold text-black">{meal.name}</h3>
+                        <p className="text-sm text-gray-500">Quantity: {quantity}</p>
                       </div>
-                    )}
-                    <div className="col-span-2 sm:col-span-3">
-                      <h3 className="text-lg font-semibold">{meal.name}</h3>
                     </div>
-                    <div className="flex flex-col items-end space-y-1">
-                      <p className="text-lg font-bold">B{meal.price.toFixed(2)}</p>
-                      <p className="text-sm text-gray-600">Quantity: {quantity}</p>
+                    <div className="flex flex-col items-end">
+                      <p className="text-lg font-bold text-yellow-500">B{meal.price.toFixed(2)}</p>
+                      <button
+                        onClick={() => handleRemoveItem(restaurantId, meal.customId)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FaTrashAlt />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleRemoveItem(restaurantId, meal.customId)}
-                      className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                    >
-                      <FaTrashAlt />
-                    </button>
                   </div>
                 ))}
               </div>
               <div className="flex justify-between items-center mt-4">
-                <p className="text-lg font-semibold">
-                  Total: B{totalAmountPerRestaurant(items).toFixed(2)}
+                <p className="text-lg font-semibold text-black">
+                  Total: <span className="text-yellow-500">B{totalAmountPerRestaurant(items).toFixed(2)}</span>
                 </p>
               </div>
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 flex space-x-2">
                 <button
                   onClick={handleCheckout}
-                  className="w-full flex justify-center bg-yellow-500 text-white px-6 py-3 rounded hover:bg-green-600"
+                  className="w-full bg-yellow-500 text-white px-6 py-3 rounded hover:bg-yellow-600"
                 >
                   Checkout
                 </button>
                 <button
                   onClick={() => handleClearCart(restaurantId)}
-                  className="bg-red-500 text-white px-4 py-2 rounded flex items-center hover:bg-red-600 w-full justify-center"
+                  className="bg-red-500 text-white px-4 py-3 rounded hover:bg-red-600 flex items-center justify-center"
                 >
                   <FaTrashAlt className="mr-2" />
                   Clear Cart
