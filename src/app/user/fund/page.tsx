@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import axios from 'axios';
 
 const FundPage: React.FC = () => {
   const [amount, setAmount] = useState<number | ''>('');
   const [fee, setFee] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
-  const [bytes, setBytes] = useState<number>(0); 
+  const [bytes, setBytes] = useState<number>(0);
+  const [transferAmount, setTransferAmount] = useState<number | ''>('');
+  const [recipientUsername, setRecipientUsername] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [transferLoading, setTransferLoading] = useState<boolean>(false);
   const [tab, setTab] = useState<'fund' | 'transfer'>('fund');
   const [user, setUser] = useState<any>(null);
 
@@ -21,7 +25,7 @@ const FundPage: React.FC = () => {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
     } else {
-
+      // Handle user not found (redirect to login or show message)
     }
   }, [router]);
 
@@ -57,7 +61,7 @@ const FundPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ amount: total }),
       });
@@ -74,6 +78,45 @@ const FundPage: React.FC = () => {
       alert('Payment initiation failed.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTransfer = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Authentication token not found. Please log in again.');
+      return;
+    }
+
+    if (!recipientUsername || !transferAmount || transferAmount <= 0) {
+      alert('Please provide valid recipient username and transfer amount.');
+      return;
+    }
+
+    setTransferLoading(true);
+
+    try {
+      const response = await axios.post(
+        'https://mongobyte.onrender.com/api/v1/api/v1/users/transfer',
+        {
+          recipientUsername,
+          amount: transferAmount,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Handle successful transfer
+      alert(`Transfer Successful: ${response.data.message}`);
+    } catch (error: any) {
+      // Handle error and show error message
+      const errorMsg = error.response?.data?.message || 'Transfer failed';
+      alert(`Error: ${errorMsg}`);
+    } finally {
+      setTransferLoading(false);
     }
   };
 
@@ -161,6 +204,8 @@ const FundPage: React.FC = () => {
                 <input
                   type="number"
                   id="transferAmount"
+                  value={transferAmount === '' ? '' : transferAmount}
+                  onChange={(e) => setTransferAmount(Number(e.target.value))}
                   className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
                   placeholder="Enter amount"
                 />
@@ -172,6 +217,8 @@ const FundPage: React.FC = () => {
                 <input
                   type="text"
                   id="recipient"
+                  value={recipientUsername}
+                  onChange={(e) => setRecipientUsername(e.target.value)}
                   className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
                   placeholder="Enter recipient's username"
                 />
@@ -179,10 +226,11 @@ const FundPage: React.FC = () => {
 
               <button
                 type="button"
+                onClick={handleTransfer}
                 className="w-full bg-yellow-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-yellow-600 transition duration-200"
-                // Add transfer logic here
+                disabled={transferAmount === '' || recipientUsername === '' || transferLoading}
               >
-                Transfer
+                {transferLoading ? 'Processing...' : 'Transfer'}
               </button>
             </form>
           </div>

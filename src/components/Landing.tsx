@@ -22,6 +22,7 @@ const Landing: React.FC = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode<any>(token);
+        console.log(decodedToken)
         if (decodedToken.user) {
           router.push('/user/');
         }
@@ -29,7 +30,7 @@ const Landing: React.FC = () => {
           router.push('/restaurant/dashboard');
         }
         else{
-          localStorage.removeItem('token');
+          // localStorage.removeItem('token');
         }
       } catch (error) {
         

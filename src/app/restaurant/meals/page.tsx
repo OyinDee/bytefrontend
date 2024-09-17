@@ -164,13 +164,32 @@ const MealsPage = () => {
         tag: "regular",
         price: "",
         imageUrl: "",
-        availability: false ,
+        availability: false,
       });
       setSelectedImage(null);
     } catch (error) {
       console.error(error);
     }
     setIsLoading(false);
+  };
+
+  // Toggle availability function
+  const toggleAvailability = async (meal: Meal) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `https://mongobyte.onrender.com/api/v1/meals/${meal.customId}`,
+        { availability: !meal.availability },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMeals(
+        meals.map((m) =>
+          m.customId === meal.customId ? { ...m, availability: !m.availability } : m
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update availability:", error);
+    }
   };
 
   return (
@@ -216,20 +235,20 @@ const MealsPage = () => {
             className="w-full mb-2 p-2 border rounded"
             placeholder="Price"
           />
-<select
-  name="availability"
-  value={form.availability ? "true" : "false"}
-  onChange={(e) =>
-    setForm((prev) => ({
-      ...prev,
-      availability: e.target.value == "true",
-    }))
-  }
-  className="w-full mb-2 p-2 border rounded"
->
-  <option value="true">Available</option>
-  <option value="false">Not Available</option>
-</select>
+          <select
+            name="availability"
+            value={form.availability ? "true" : "false"}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                availability: e.target.value == "true",
+              }))
+            }
+            className="w-full mb-2 p-2 border rounded"
+          >
+            <option value="true">Available</option>
+            <option value="false">Not Available</option>
+          </select>
 
           <input
             type="file"
@@ -257,53 +276,41 @@ const MealsPage = () => {
         </form>
       </div>
 
-      <h1 className="text-2xl font-bold mb-6 text-black">Admin Dashboard - Meals</h1>
+      <h1 className="text-2xl font-bold mb-6">Available Meals</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {meals.map((meal) => (
+          <div key={meal.customId} className="bg-gray-100 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold">{meal.name}</h2>
+            <p>{meal.description}</p>
+            <p className="font-semibold">${meal.price.toFixed(2)}</p>
+            <p className={`font-semibold ${meal.availability ? "text-green-500" : "text-red-500"}`}>
+              {meal.availability ? "Available" : "Not Available"}
+            </p>
 
-      {meals.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {meals.map((meal) => (
-            <div key={meal.customId} className="bg-white shadow rounded-lg p-4">
-              <div className="mb-4">
-                {meal.imageUrl ? (
-                  <div className="w-full h-40 relative">
-                    <Image
-                      src={meal.imageUrl}
-                      alt={meal.name}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-40 bg-gray-200 rounded" />
-                )}
-              </div>
-              <h3 className="text-lg font-semibold">{meal.name}</h3>
-              <p className="text-sm text-gray-600">{meal.description}</p>
-              <p className="text-sm text-gray-600">B{meal.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-600">{meal.tag || "regular"}</p>
-              <p className="text-sm text-gray-600">
-                {meal.availability ? "Available" : "Not Available"}
-              </p>
-              <div className="flex space-x-4 mt-4">
-                <button
-                  onClick={() => handleEdit(meal)}
-                  className="text-blue-500 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(meal.customId)}
-                  className="text-red-500 hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-600">No meals available</p>
-      )}
+            <button
+              onClick={() => toggleAvailability(meal)}
+              className={`mt-2 w-full py-2 font-semibold rounded-lg ${
+                meal.availability ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {meal.availability ? "Mark as Unavailable" : "Mark as Available"}
+            </button>
+
+            <button
+              onClick={() => handleEdit(meal)}
+              className="mt-2 w-full py-2 bg-yellow-500 text-black font-semibold rounded-lg hover:bg-yellow-600"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(meal.customId)}
+              className="mt-2 w-full py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
