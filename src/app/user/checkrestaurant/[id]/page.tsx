@@ -62,7 +62,9 @@ const RestaurantPage = () => {
     return restaurant?.meals.filter((meal) => meal.tag === tag) || [];
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return  <div className="flex justify-center items-center h-screen">
+  <p className="text-lg text-gray-600">Loading...</p>
+</div>
 
   return (
     <div className="p-4 bg-white min-h-screen">
