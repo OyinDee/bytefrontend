@@ -96,7 +96,7 @@ const CartPage = () => {
                       <p className="text-lg font-bold text-yellow-500">B{meal.price.toFixed(2)}</p>
                       <button
                         onClick={() => handleRemoveItem(restaurantId, meal.customId)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 flex justify-center"
                       >
                         <FaTrashAlt />
                       </button>
