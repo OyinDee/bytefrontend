@@ -1,10 +1,11 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 
+// MealCard Component
 interface Meal {
   customId: string;
   name: string;
@@ -15,6 +16,57 @@ interface Meal {
   tag: "regular" | "combo" | "add-on";
 }
 
+interface MealCardProps {
+  meal: Meal;
+  addToCart: (meal: Meal) => void;
+  handleQuantityChange: (meal: Meal, change: number) => void;
+  quantity: number;
+}
+
+const MealCard: FC<MealCardProps> = ({ meal, addToCart, handleQuantityChange, quantity }) => {
+  return (
+    <div className="border rounded-lg p-4 bg-white shadow-md">
+      {meal.imageUrl && (
+        <div className="relative w-full h-40 mb-4">
+          <Image
+            src={meal.imageUrl}
+            alt={meal.name}
+            layout="fill"
+            objectFit="cover"
+            className="rounded-lg"
+          />
+        </div>
+      )}
+      <h3 className="text-xl font-semibold mb-2">{meal.name}</h3>
+      {meal.description && <p className="text-sm text-gray-600 mb-2">{meal.description}</p>}
+      <p className="text-lg font-bold mb-2">${meal.price.toFixed(2)}</p>
+      <div className="flex items-center mb-4">
+        <button
+          onClick={() => handleQuantityChange(meal, -1)}
+          className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l"
+          disabled={quantity <= 1}
+        >
+          -
+        </button>
+        <span className="px-4 py-2 border-t border-b border-gray-300">{quantity}</span>
+        <button
+          onClick={() => handleQuantityChange(meal, 1)}
+          className="px-4 py-2 bg-gray-300 text-gray-800 rounded-r"
+        >
+          +
+        </button>
+      </div>
+      <button
+        onClick={() => addToCart(meal)}
+        className="w-full bg-yellow-500 text-white p-2 rounded"
+      >
+        Add to Cart
+      </button>
+    </div>
+  );
+};
+
+// RestaurantPage Component
 interface Restaurant {
   customId: string;
   name: string;
@@ -37,7 +89,6 @@ const RestaurantPage = () => {
     addon: false,
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
@@ -183,6 +234,7 @@ const RestaurantPage = () => {
                       meal={meal}
                       addToCart={addToCart}
                       handleQuantityChange={handleQuantityChange}
+                      quantity={cart.get(meal.customId)?.quantity || 1}
                     />
                   ))
               ) : (
@@ -212,6 +264,7 @@ const RestaurantPage = () => {
                       meal={meal}
                       addToCart={addToCart}
                       handleQuantityChange={handleQuantityChange}
+                      quantity={cart.get(meal.customId)?.quantity || 1}
                     />
                   ))
               ) : (
@@ -221,13 +274,13 @@ const RestaurantPage = () => {
           )}
         </section>
 
- 
-        <section className="mb-6">
+        {/* Add-On Meals Section */}
+        <section>
           <div
             className="flex justify-between cursor-pointer bg-black text-white p-4 rounded"
             onClick={() => toggleSection("addon")}
           >
-            <h2 className="text-2xl font-semibold">Add-ons</h2>
+            <h2 className="text-2xl font-semibold">Add-Ons</h2>
             <span>{collapsedSections.addon ? "+" : "-"}</span>
           </div>
           {!collapsedSections.addon && (
@@ -241,6 +294,7 @@ const RestaurantPage = () => {
                       meal={meal}
                       addToCart={addToCart}
                       handleQuantityChange={handleQuantityChange}
+                      quantity={cart.get(meal.customId)?.quantity || 1}
                     />
                   ))
               ) : (
@@ -251,72 +305,13 @@ const RestaurantPage = () => {
         </section>
       </div>
 
-   
+      {/* Notification */}
       {notification && (
-        <div className="fixed bottom-4 right-4 bg-yellow-500 text-white p-3 rounded shadow-lg">
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-lg">
           {notification}
         </div>
       )}
     </div>
-  );
-};
-
-interface MealCardProps {
-  meal: Meal;
-  addToCart: (meal: Meal) => void;
-  handleQuantityChange: (meal: Meal, change: number) => void;
-}
-
-const MealCard = ({ meal, addToCart, handleQuantityChange }: MealCardProps) => {
-  const [quantity, setQuantity] = useState(1);
-
-  return (
-    <div className="border rounded-lg p-4 shadow-lg">
-      {meal.imageUrl && (
-        <div className="relative w-full h-48 mb-4">
-          <Image
-            src={meal.imageUrl}
-            alt={meal.name}
-            layout="fill"
-            objectFit="cover"
-            className="rounded"
-          />
-        </div>
-      )}
-      <h3 className="text-xl font-semibold mb-2">{meal.name}</h3>
-      <p className="text-gray-600 mb-2">{meal.description}</p>
-      <p className="text-lg font-bold mb-2">B{meal.price.toFixed(2)}</p>
-      <div className="flex items-center mb-4 w-full">
-        <button
-          onClick={() => handleQuantityChange(meal, -1)}
-          className="bg-gray-300 p-2"
-        >
-          -
-        </button>
-        <input
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          min="1"
-          className="mx-2 w-12 text-center border p-1 rounded-lg"
-        />
-        <button
-          onClick={() => handleQuantityChange(meal, 1)}
-          className="bg-gray-300 p-2"
-        >
-          +
-        </button>
-      <button
-        onClick={() => {
-          addToCart(meal);
-          setQuantity(1); 
-        }}
-        className="bg-yellow-500 ml-4 text-white p-2 rounded-lg w-full"
-      >
-        Add to Cart
-      </button>
-    </div>
-      </div>
   );
 };
 
