@@ -17,6 +17,7 @@ interface Meal {
 interface CartItem {
   meal: Meal;
   quantity: number;
+  
 }
 
 const CartPage = () => {
