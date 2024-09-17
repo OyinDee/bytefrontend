@@ -98,7 +98,7 @@ const FundPage: React.FC = () => {
 
     try {
       const response = await axios.post(
-        'https://mongobyte.onrender.com/api/v1/api/v1/users/transfer',
+        'https://mongobyte.onrender.com/api/v1/users/transfer',
         {
           recipientUsername,
           amount: transferAmount,
