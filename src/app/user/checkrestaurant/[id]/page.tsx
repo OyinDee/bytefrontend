@@ -138,7 +138,7 @@ const MealCard = ({ meal, restaurantId }: { meal: Meal; restaurantId: string }) 
   return (
     <div className="border rounded-lg p-4 shadow-md">
       <h3 className="text-xl font-semibold mb-2">{meal.name}</h3>
-      <p className="text-lg font-bold mb-2">${meal.price.toFixed(2)}</p>
+      <p className="text-lg font-bold mb-2">B{meal.price.toFixed(2)}</p>
       <div className="flex items-center mb-4">
         <button
           onClick={handleDecrease}

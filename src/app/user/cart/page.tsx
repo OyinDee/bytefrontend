@@ -28,9 +28,11 @@ const CartPage = () => {
       }
     }
   }, []);
+
   const handleCheckout = () => {
-    alert("Okay...")
+    alert("Proceeding to checkout...");
   };
+
   const handleRemoveItem = (restaurantId: string, mealId: string) => {
     const newCart = new Map(cart);
     const items = newCart.get(restaurantId) || [];
@@ -67,29 +69,31 @@ const CartPage = () => {
           <p className="text-center text-gray-500">Your cart is empty.</p>
         ) : (
           Array.from(cart.entries()).map(([restaurantId, items]) => (
-            <div key={restaurantId} className="border-b mb-6 pb-6">
+            <div key={restaurantId} className="border-b mb-8 pb-6">
               <h2 className="text-xl font-semibold mb-4">
                 Restaurant: {items.length > 0 ? items[0].meal.restaurantId : "Unknown"}
               </h2>
-              {items.map(({ meal, quantity }) => (
-                <div key={meal.customId} className="flex items-center justify-between mb-4">
-                  {meal.imageUrl && (
-                    <div className="relative w-16 h-16 mr-4">
-                      <Image
-                        src={meal.imageUrl}
-                        alt={meal.name}
-                        layout="fill"
-                        objectFit="cover"
-                        className="rounded"
-                      />
+              <div className="space-y-4">
+                {items.map(({ meal, quantity }) => (
+                  <div key={meal.customId} className="grid grid-cols-3 gap-4 sm:grid-cols-5 items-center">
+                    {meal.imageUrl && (
+                      <div className="relative w-full h-24 sm:h-32">
+                        <Image
+                          src={meal.imageUrl}
+                          alt={meal.name}
+                          layout="fill"
+                          objectFit="cover"
+                          className="rounded"
+                        />
+                      </div>
+                    )}
+                    <div className="col-span-2 sm:col-span-3">
+                      <h3 className="text-lg font-semibold">{meal.name}</h3>
                     </div>
-                  )}
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold">{meal.name}</h3>
-                  </div>
-                  <div className="text-right flex items-center">
-                    <p className="text-lg font-bold mr-4">B{(meal.price).toFixed(2)}</p>
-                    <p className="text-sm text-gray-600 mr-4">Quantity: {quantity}</p>
+                    <div className="flex flex-col items-end space-y-1">
+                      <p className="text-lg font-bold">B{meal.price.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600">Quantity: {quantity}</p>
+                    </div>
                     <button
                       onClick={() => handleRemoveItem(restaurantId, meal.customId)}
                       className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
@@ -97,19 +101,20 @@ const CartPage = () => {
                       <FaTrashAlt />
                     </button>
                   </div>
-                </div>
-              ))}
-              <div className="flex justify-between items-center">
-                <p className="text-lg font-semibold">Total: B{totalAmountPerRestaurant(items).toFixed(2)}</p>
-
+                ))}
               </div>
-              <div>
-              <button
-                onClick={handleCheckout}
-                className="w-full flex justify-center bg-yellow-500 text-white px-6 py-3 rounded hover:bg-green-600 my-2"
-              >
-                Checkout
-              </button>
+              <div className="flex justify-between items-center mt-4">
+                <p className="text-lg font-semibold">
+                  Total: B{totalAmountPerRestaurant(items).toFixed(2)}
+                </p>
+              </div>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={handleCheckout}
+                  className="w-full flex justify-center bg-yellow-500 text-white px-6 py-3 rounded hover:bg-green-600"
+                >
+                  Checkout
+                </button>
                 <button
                   onClick={() => handleClearCart(restaurantId)}
                   className="bg-red-500 text-white px-4 py-2 rounded flex items-center hover:bg-red-600 w-full justify-center"
