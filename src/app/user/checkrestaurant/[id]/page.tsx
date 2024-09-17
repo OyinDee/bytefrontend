@@ -98,7 +98,7 @@ const RestaurantPage = () => {
       return updatedCart;
     });
     setNotification(`"${meal.name}" has been added to the cart.`);
-    setTimeout(() => setNotification(null), 3000); // Notification disappears after 3 seconds
+    setTimeout(() => setNotification(null), 3000); 
   };
 
   const toggleSection = (section: "regular" | "combo" | "addon") => {
@@ -271,7 +271,7 @@ const MealCard = ({ meal, addToCart, handleQuantityChange }: MealCardProps) => {
   const [quantity, setQuantity] = useState(1);
 
   return (
-    <div className="border rounded-lg p-4 bg-gray-100 shadow-lg">
+    <div className="border rounded-lg p-4 shadow-lg">
       {meal.imageUrl && (
         <div className="relative w-full h-48 mb-4">
           <Image
@@ -289,7 +289,7 @@ const MealCard = ({ meal, addToCart, handleQuantityChange }: MealCardProps) => {
       <div className="flex items-center mb-4 w-full">
         <button
           onClick={() => handleQuantityChange(meal, -1)}
-          className="bg-gray-300 p-2 rounded-lg"
+          className="bg-gray-300 p-2"
         >
           -
         </button>
@@ -302,7 +302,7 @@ const MealCard = ({ meal, addToCart, handleQuantityChange }: MealCardProps) => {
         />
         <button
           onClick={() => handleQuantityChange(meal, 1)}
-          className="bg-gray-300 p-2 rounded-lg"
+          className="bg-gray-300 p-2"
         >
           +
         </button>
