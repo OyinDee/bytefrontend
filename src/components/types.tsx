@@ -8,6 +8,7 @@ export interface Meal {
   imageUrl?: string;
   tag: "regular" | "combo" | "add-on";
   per?: string;
+  
 }
 
 

@@ -179,6 +179,7 @@ const RestaurantPage = () => {
                 ))}
             </div>
           )}
+          
         </section>
       </div>
     </div>

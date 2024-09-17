@@ -53,6 +53,7 @@ const UserNavbar: React.FC = () => {
                     <span className="text-xs">Home</span>
                   </Link>
                 </li>
+                
                 <li>
                   <Link href="/user/cart" className={`flex flex-col items-center ${getLinkClassName('/user/cart')}`}>
                     <ShoppingCartIcon className="h-5 w-5 mb-1" />

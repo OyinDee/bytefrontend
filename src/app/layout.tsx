@@ -15,6 +15,7 @@ export const metadata = {
   viewport: {
     width: 'device-width',
     initialScale: 1,
+    
   },
   icons: {
     icon: "/icons/pizza.png",

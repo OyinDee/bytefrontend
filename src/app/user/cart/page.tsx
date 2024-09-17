@@ -10,6 +10,7 @@ interface Meal {
   description?: string;
   price: number;
   availability: boolean;
+  
   imageUrl?: string;
   tag: "regular" | "combo" | "add-on"; 
 }
@@ -17,7 +18,7 @@ interface Meal {
 interface CartItem {
   meal: Meal;
   quantity: number;
-  
+
 }
 
 const CartPage = () => {

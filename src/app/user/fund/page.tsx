@@ -35,6 +35,7 @@ const FundPage: React.FC = () => {
       setAmount('');
       setFee(0);
       setTotal(0);
+      
       setBytes(0);
     } else {
       const calculatedFee = inputAmount * 0.03; 

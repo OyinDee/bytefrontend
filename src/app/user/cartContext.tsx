@@ -14,6 +14,7 @@ interface CartContextType {
   updateQuantity: (meal: Meal, change: number) => void;
   clearCart: () => void;
   getItemCount: () => number;  // Add getItemCount here
+  
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
